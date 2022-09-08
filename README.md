@@ -1,2 +1,2 @@
-# 22-23-FTCSenior
-Senior code for FTC 16488
+# 22-23-FTCJunior
+Junior code for FTC 16488
