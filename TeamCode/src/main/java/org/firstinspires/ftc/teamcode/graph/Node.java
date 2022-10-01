@@ -24,7 +24,6 @@ public class Node {
 
     public void addDestination(Node destination) {
         Double distance = Math.sqrt(Math.pow(destination.getX() - this.x, 2) + Math.pow(destination.getY() - this.y, 2));
-        //System.out.println(distance);
         adjacentNodes.put(destination, distance);
     }
 
