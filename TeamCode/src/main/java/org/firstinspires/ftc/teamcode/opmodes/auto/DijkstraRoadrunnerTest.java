@@ -1,11 +1,18 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import android.util.Pair;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
+import org.firstinspires.ftc.teamcode.graph.Dijkstra;
 import org.firstinspires.ftc.teamcode.graph.Graph;
 import org.firstinspires.ftc.teamcode.graph.Node;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Autonomous(name = "testgrid")
 public class DijkstraRoadrunnerTest extends LinearOpMode {
@@ -46,5 +53,16 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                 }
             }
         }
+        HashMap<Pair<Node, Node>, List<Node>> map = new HashMap<>();
+        for (Node n : graph.getNodes()) {
+                Dijkstra.calculateShortestPathFromSource(graph, n);
+                for (Node n2 : graph.getNodes()) {
+                    if (n==n2) continue;
+                    Pair<Node, Node> key = new Pair<>(n, n2);
+                    map.put(key, n2.getShortestPath());
+                }
+        }
+
+        System.out.println(map.get(new Pair<>(new Node(60, 60), new Node(12, 12))));
     }
 }
