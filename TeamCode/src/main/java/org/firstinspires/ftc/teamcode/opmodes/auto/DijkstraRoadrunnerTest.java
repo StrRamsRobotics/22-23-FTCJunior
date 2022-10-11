@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import android.util.Pair;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -13,6 +16,7 @@ import org.firstinspires.ftc.teamcode.graph.Node;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Autonomous(name = "testgrid")
 public class DijkstraRoadrunnerTest extends LinearOpMode {
@@ -53,16 +57,43 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                 }
             }
         }
-        HashMap<Pair<Node, Node>, List<Node>> map = new HashMap<>();
+        HashMap<Pair, List<Node>> map = new HashMap<>();
         for (Node n : graph.getNodes()) {
                 Dijkstra.calculateShortestPathFromSource(graph, n);
                 for (Node n2 : graph.getNodes()) {
                     if (n==n2) continue;
-                    Pair<Node, Node> key = new Pair<>(n, n2);
+                    Pair key = new Pair(n, n2);
                     map.put(key, n2.getShortestPath());
                 }
         }
 
-        System.out.println(map.get(new Pair<>(new Node(60, 60), new Node(12, 12))));
+        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d());
+        List<Node> path = map.get(new Pair(new Node(12, 12), new Node(12, -12)));
+        for (Node n : path) {
+            builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getRawExternalHeading());
+        }
+        drive.followTrajectory(builder.build());
+
+    }
+    private static class Pair {
+        private final Node one, two;
+
+        private Pair(Node one, Node two) {
+            this.one = one;
+            this.two = two;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Pair pair = (Pair) o;
+            return Objects.equals(one, pair.one) && Objects.equals(two, pair.two);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(one, two);
+        }
     }
 }

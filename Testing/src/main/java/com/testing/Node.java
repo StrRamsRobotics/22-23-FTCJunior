@@ -10,8 +10,8 @@ public class Node {
 
     private Double distance = Double.MAX_VALUE;
 
-    private int x = 0;
-    private int y = 0;
+    public int x = 0;
+    public int y = 0;
 
     private Map<Node, Double> adjacentNodes = new HashMap<>();
 

@@ -1,8 +1,11 @@
 package com.testing;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -40,6 +43,40 @@ public class GraphTest {
                 }
             }
         }
+        Node start = (Node) graph.getNodes().toArray()[0];
+        ArrayDeque<Node> queue = new ArrayDeque<>();
+        queue.add(start);
+        double[][] dis = new double[121][121];
+        Node[][] prev = new Node[121][121];
+        boolean[][] vis = new boolean[121][121];
+        Node end = null;
+        while (!queue.isEmpty()) {
+            Node cur = queue.poll();
+            if (cur.x==60&&cur.y==60) {
+                end = cur;
+                break;
+            }
+            vis[cur.x+60][cur.y+60] = true;
+            for (Map.Entry<Node, Double> adj : cur.getAdjacentNodes().entrySet()) {
+                Node next = adj.getKey();
+                if (!vis[next.x+60][next.x+60]) {
+                    vis[next.x+60][next.y+60] = true;
+                    dis[next.x+60][next.y+60] = dis[cur.x+60][cur.y+60]+adj.getValue();
+                    prev[next.x+60][next.y+60]= cur;
+                    queue.add(next);
+                }
+            }
+        }
+        assert end != null;
+
+        while (true) {
+            if (end.x == start.x&&end.y==start.y) {
+                break;
+            }
+            System.out.println(end);
+            end = prev[end.x+60][end.y+60];
+        }
+      /*  Dijkstra.calculateShortestPathFromSource(graph, (Node) graph.getNodes().toArray()[0]);
 
         HashMap<Pair, List<Node>> map = new HashMap<>();
         for (Node n : graph.getNodes()) {
@@ -51,7 +88,7 @@ public class GraphTest {
             }
         }
 
-        System.out.println(map.get(new Pair(new Node(12, 12), new Node(12, 36))));
+        System.out.println(map.get(new Pair(new Node(12, 12), new Node(12, 36))));*/
     }
     private static class Pair {
         private final Node one, two;
