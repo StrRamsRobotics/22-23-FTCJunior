@@ -1,7 +1,7 @@
 package com.testing;
 
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,7 +15,7 @@ public class Node {
 
     private Map<Node, Double> adjacentNodes = new HashMap<>();
 
-    private LinkedList<Node> shortestPath = new LinkedList<>();
+    private ArrayList<Node> shortestPath = new ArrayList<>();
 
     public Node(Integer x, Integer y) {
         this.x = x;
@@ -52,7 +52,7 @@ public class Node {
         return shortestPath;
     }
 
-    public void setShortestPath(LinkedList<Node> shortestPath) {
+    public void setShortestPath(ArrayList<Node> shortestPath) {
         this.shortestPath = shortestPath;
     }
 

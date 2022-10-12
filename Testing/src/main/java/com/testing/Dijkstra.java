@@ -1,7 +1,7 @@
 package com.testing;
 
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public class Dijkstra {
         double sourceDistance = sourceNode.getDistance();
         if (sourceDistance + edgeWeight < evaluationNode.getDistance()) {
             evaluationNode.setDistance(sourceDistance + edgeWeight);
-            LinkedList<Node> shortestPath = new LinkedList<>(sourceNode.getShortestPath());
+            ArrayList<Node> shortestPath = new ArrayList<>(sourceNode.getShortestPath());
             shortestPath.add(sourceNode);
             evaluationNode.setShortestPath(shortestPath);
         }
@@ -32,7 +32,7 @@ public class Dijkstra {
     public static Graph calculateShortestPathFromSource(Graph graph, Node source) {
         for (Node graphNode : graph.getNodes()) {
             graphNode.setDistance(Double.MAX_VALUE);
-            graphNode.setShortestPath(new LinkedList<>());
+            graphNode.setShortestPath(new ArrayList<>());
         }
         source.setDistance(0.0);
 
