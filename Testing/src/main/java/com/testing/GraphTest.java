@@ -10,8 +10,12 @@ import java.util.Objects;
 
 
 public class GraphTest {
+    // just so all the +60's don't get too confusing
+    private static Node getNode(Node[][] graph, int x, int y) {
+        return graph[60+x][60+y];
+    }
     public static void main(String[] args) {
-        Graph graph = new Graph();
+        Node[][] graph = new Node[121][121]; //node[x][y]
         for (int i = -60; i <= 60; i += 24) {
             for (int j = -60; j <= 60; j += 24) {
                 Node cur = new Node(i, j);
@@ -21,61 +25,20 @@ public class GraphTest {
                         new Node(i, j + 24),
                         new Node(i, j - 24)
                 };
+
                 for (Node next : nexts) {
                     if (Math.abs(next.getY())<=60 && Math.abs(next.getX())<=60) {
                         cur.addDestination(next);
                         next.addDestination(cur);
-                        if (!graph.getNodes().contains(next)) {
-                            graph.addNode(next);
-                        } else {
-                            Node old = next;
-                            for (Node n : graph.getNodes()) {
-                                if (n.equals(next)) {
-                                    old = n;
-                                    break;
-                                }
-                            }
-                            old.getAdjacentNodes().putAll(next.getAdjacentNodes());
-
+                        if (graph[60+next.getX()][60+next.getY()]==null) {
+                            graph[60+next.getX()][60+next.getY()] = next;
                         }
-
+                        graph[60+next.getX()][60+next.getY()].getAdjacentNodes().putAll(next.getAdjacentNodes());
                     }
                 }
             }
         }
-        Node start = (Node) graph.getNodes().toArray()[0];
-        ArrayDeque<Node> queue = new ArrayDeque<>();
-        queue.add(start);
-        double[][] dis = new double[121][121];
-        Node[][] prev = new Node[121][121];
-        boolean[][] vis = new boolean[121][121];
-        Node end = null;
-        while (!queue.isEmpty()) {
-            Node cur = queue.poll();
-            if (cur.x==60&&cur.y==60) {
-                end = cur;
-                break;
-            }
-            vis[cur.x+60][cur.y+60] = true;
-            for (Map.Entry<Node, Double> adj : cur.getAdjacentNodes().entrySet()) {
-                Node next = adj.getKey();
-                if (!vis[next.x+60][next.x+60]) {
-                    vis[next.x+60][next.y+60] = true;
-                    dis[next.x+60][next.y+60] = dis[cur.x+60][cur.y+60]+adj.getValue();
-                    prev[next.x+60][next.y+60]= cur;
-                    queue.add(next);
-                }
-            }
-        }
-        assert end != null;
-
-        while (true) {
-            if (end.x == start.x&&end.y==start.y) {
-                break;
-            }
-            System.out.println(end);
-            end = prev[end.x+60][end.y+60];
-        }
+        System.out.println(getNode(graph, 60, 60).getAdjacentNodes()); //prints {(36,60)=24.0, (60,36)=24.0}
       /*  Dijkstra.calculateShortestPathFromSource(graph, (Node) graph.getNodes().toArray()[0]);
 
         HashMap<Pair, List<Node>> map = new HashMap<>();
