@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import android.util.Pair;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
@@ -19,13 +20,15 @@ import java.util.List;
 import java.util.Objects;
 
 @Autonomous(name = "testgrid")
+
 public class DijkstraRoadrunnerTest extends LinearOpMode {
+    private Graph graph = new Graph();
     public static SampleTankDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DijkstraRoadrunnerTest.drive = new SampleTankDrive(hardwareMap);
-        Graph graph = new Graph(); //field grid
+
+        drive = new SampleTankDrive(hardwareMap);
         for (int i = -60; i <= 60; i += 24) {
             for (int j = -60; j <= 60; j += 24) {
                 Node cur = new Node(i, j);
@@ -49,51 +52,43 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                                     break;
                                 }
                             }
-                            old.getAdjacentNodes().putAll(next.getAdjacentNodes());
-
+                            old.addDestination(cur);
+                            cur.addDestination(old);
                         }
 
                     }
                 }
             }
         }
-        HashMap<Pair, List<Node>> map = new HashMap<>();
-        for (Node n : graph.getNodes()) {
-                Dijkstra.calculateShortestPathFromSource(graph, n);
-                for (Node n2 : graph.getNodes()) {
-                    if (n==n2) continue;
-                    Pair key = new Pair(n, n2);
-                    map.put(key, n2.getShortestPath());
-                }
-        }
 
         TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d());
-        List<Node> path = map.get(new Pair(new Node(12, 12), new Node(12, -12)));
+        Node start = findNode(12, 12), end = findNode(60, 60);
+        List<Node> path = getpath(start, end);
+        path.remove(0);
+        path.add(end);
         for (Node n : path) {
-            builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getRawExternalHeading());
+            builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getPoseEstimate().getHeading());
         }
         drive.followTrajectory(builder.build());
 
     }
-    private static class Pair {
-        private final Node one, two;
 
-        private Pair(Node one, Node two) {
-            this.one = one;
-            this.two = two;
+    private Node findNode(int x, int y) {
+        for (Node n : graph.getNodes()) {
+            if (n.x==x&&n.y==y) {
+                return n;
+            }
         }
+        return null;
+    }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Pair pair = (Pair) o;
-            return Objects.equals(one, pair.one) && Objects.equals(two, pair.two);
+    private List<Node> getpath(Node from, Node to) {
+        Dijkstra.calculateShortestPathFromSource(graph, from);
+        for (Node n : graph.getNodes()) {
+            if (n == to) {
+                return n.getShortestPath();
+            }
         }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(one, two);
-        }
+        return null;
     }
 }

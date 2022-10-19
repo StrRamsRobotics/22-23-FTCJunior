@@ -1,76 +1,120 @@
 package com.testing;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+/**
+ * Node Class
+ *
+ * @author Marcelo Surriabre
+ * @version 2.0, 2018-02-23
+ */
 public class Node {
 
-    private Double distance = Double.MAX_VALUE;
+    private int g;
+    private int f;
+    private int h;
+    public int row;
+    public int col;
+    private boolean isBlock;
+    private Node parent;
 
-    public int x = 0;
-    public int y = 0;
-
-    private Map<Node, Double> adjacentNodes = new HashMap<>();
-
-    private ArrayList<Node> shortestPath = new ArrayList<>();
-
-    public Node(Integer x, Integer y) {
-        this.x = x;
-        this.y = y;
+    public Node(int row, int col) {
+        super();
+        this.row = row;
+        this.col = col;
     }
 
-    public void addDestination(Node destination) {
-        Double distance = Math.sqrt(Math.pow(destination.getX() - this.x, 2) + Math.pow(destination.getY() - this.y, 2));
-        //System.out.println(distance);
-        adjacentNodes.put(destination, distance);
+    public Node offset(int row, int col) {
+        return new Node(this.getRow() + row, this.getCol() + col);
     }
 
-    public Double getDistance() {
-        return distance;
+    public void calculateHeuristic(Node finalNode) {
+        this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
     }
 
-    public void setDistance(Double distance) {
-        this.distance = distance;
+    public void setNodeData(Node currentNode, int cost) {
+        int gCost = currentNode.getG() + cost;
+        setParent(currentNode);
+        setG(gCost);
+        calculateFinalCost();
     }
 
-    public int getX() {
-        return x;
+    public boolean checkBetterPath(Node currentNode, int cost) {
+        int gCost = currentNode.getG() + cost;
+        if (gCost < getG()) {
+            setNodeData(currentNode, cost);
+            return true;
+        }
+        return false;
     }
 
-    public int getY() {
-        return y;
+    private void calculateFinalCost() {
+        int finalCost = getG() + getH();
+        setF(finalCost);
     }
 
-    public Map<Node, Double> getAdjacentNodes() {
-        return adjacentNodes;
-    }
-
-    public List<Node> getShortestPath() {
-        return shortestPath;
-    }
-
-    public void setShortestPath(ArrayList<Node> shortestPath) {
-        this.shortestPath = shortestPath;
+    @Override
+    public boolean equals(Object arg0) {
+        Node other = (Node) arg0;
+        return this.getRow() == other.getRow() && this.getCol() == other.getCol();
     }
 
     @Override
     public String toString() {
-        return "("+x+","+y+")";
+        return "Node [row=" + row + ", col=" + col + "]";
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return Objects.equals(x, node.x) && Objects.equals(y, node.y);
+    public int getH() {
+        return h;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
+    public void setH(int h) {
+        this.h = h;
+    }
+
+    public int getG() {
+        return g;
+    }
+
+    public void setG(int g) {
+        this.g = g;
+    }
+
+    public int getF() {
+        return f;
+    }
+
+    public void setF(int f) {
+        this.f = f;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+
+    public boolean isBlock() {
+        return isBlock;
+    }
+
+    public void setBlock(boolean isBlock) {
+        this.isBlock = isBlock;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
     }
 }
