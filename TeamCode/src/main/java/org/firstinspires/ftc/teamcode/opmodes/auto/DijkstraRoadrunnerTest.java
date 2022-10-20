@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.kinematics.TankKinematics;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -27,7 +28,6 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         drive = new SampleTankDrive(hardwareMap);
         for (int i = -60; i <= 60; i += 24) {
             for (int j = -60; j <= 60; j += 24) {
@@ -61,7 +61,7 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
             }
         }
 
-        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d());
+        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d(12, 12));
         Node start = findNode(12, 12), end = findNode(60, 60);
         List<Node> path = getpath(start, end);
         path.remove(0);
@@ -69,7 +69,7 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
         for (Node n : path) {
             builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getPoseEstimate().getHeading());
         }
-        drive.followTrajectory(builder.build());
+        drive.followTrajectory( builder.build());
 
     }
 

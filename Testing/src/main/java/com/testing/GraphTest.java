@@ -15,7 +15,7 @@ public class GraphTest {
         for (int i = -64; i <= 64; i++) {
             for (int j = -64; j <= 64; j++) {
                 for (Node ref : start) {
-                    if (Math.sqrt(Math.pow(i - ref.row, 2) + Math.pow(j - ref.col, 2)) <= 8) { //7 inch radius with 1 inch wiggle
+                    if (Math.sqrt(Math.pow(i - ref.row, 2) + Math.pow(j - ref.col, 2)) <= 9) { //8 inch radius with 1 inch wiggle
                         Node n = new Node(i, j);
                         n.setBlock(true);
                         expand.add(n);
@@ -25,4 +25,5 @@ public class GraphTest {
         }
         System.out.println(expand);
     }
+
 }
