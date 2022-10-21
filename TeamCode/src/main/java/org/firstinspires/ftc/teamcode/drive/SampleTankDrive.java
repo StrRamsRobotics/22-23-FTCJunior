@@ -213,7 +213,11 @@ public class SampleTankDrive extends TankDrive {
 
     public void update() {
         updatePoseEstimate();
-        DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        Pose2d vel = getPoseVelocity();
+        if (vel != null) {
+            vel.minus(new Pose2d(0, vel.getY(), 0));
+        }
+        DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), vel);
         if (signal != null) setDriveSignal(signal);
     }
 

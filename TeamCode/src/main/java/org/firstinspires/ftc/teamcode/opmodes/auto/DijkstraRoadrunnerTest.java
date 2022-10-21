@@ -1,34 +1,31 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import android.util.Pair;
-
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.kinematics.TankKinematics;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 import org.firstinspires.ftc.teamcode.graph.Dijkstra;
 import org.firstinspires.ftc.teamcode.graph.Graph;
 import org.firstinspires.ftc.teamcode.graph.Node;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 @Autonomous(name = "testgrid")
 
 public class DijkstraRoadrunnerTest extends LinearOpMode {
     private Graph graph = new Graph();
-    public static SampleTankDrive drive;
+    private SampleTankDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SampleTankDrive(hardwareMap);
+        waitForStart();
         for (int i = -60; i <= 60; i += 24) {
             for (int j = -60; j <= 60; j += 24) {
                 Node cur = new Node(i, j);
@@ -39,7 +36,7 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                         new Node(i, j - 24)
                 };
                 for (Node next : nexts) {
-                    if (Math.abs(next.getY())<=60 && Math.abs(next.getX())<=60) {
+                    if (Math.abs(next.getY()) <= 60 && Math.abs(next.getX()) <= 60) {
                         cur.addDestination(next);
                         next.addDestination(cur);
                         if (!graph.getNodes().contains(next)) {
@@ -60,22 +57,34 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                 }
             }
         }
-
-        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d(12, 12));
+        Telemetry t = FtcDashboard.getInstance().getTelemetry();
+        t.addData("a", "built");
+        t.update();
+        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d(12, 12, 0));
         Node start = findNode(12, 12), end = findNode(60, 60);
+        t.addData(start.x + " " + start.y, end.x+ " " + end.y);
+        t.update();
         List<Node> path = getpath(start, end);
+
         path.remove(0);
         path.add(end);
         for (Node n : path) {
             builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getPoseEstimate().getHeading());
         }
-        drive.followTrajectory( builder.build());
 
+
+        drive.followTrajectory(builder.build());
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.put("a", "done");
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+        while (opModeIsActive()) {
+
+        }
     }
 
     private Node findNode(int x, int y) {
         for (Node n : graph.getNodes()) {
-            if (n.x==x&&n.y==y) {
+            if (n.x == x && n.y == y) {
                 return n;
             }
         }
@@ -85,8 +94,14 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
     private List<Node> getpath(Node from, Node to) {
         Dijkstra.calculateShortestPathFromSource(graph, from);
         for (Node n : graph.getNodes()) {
-            if (n == to) {
-                return n.getShortestPath();
+            if (n.equals(to)) {
+                List<Node> path = n.getShortestPath();
+                TelemetryPacket p = new TelemetryPacket();
+                for (Node n2 : path) {
+                    p.put("path", n2.toString());
+                }
+                FtcDashboard.getInstance().sendTelemetryPacket(p);
+                return path;
             }
         }
         return null;
