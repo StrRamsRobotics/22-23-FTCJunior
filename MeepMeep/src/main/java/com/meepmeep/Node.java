@@ -1,76 +1,103 @@
 package com.meepmeep;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Node Class
+ *
+ * @author Marcelo Surriabre
+ * @version 2.0, 2018-02-23
+ */
 public class Node {
 
-    private Double distance = Double.MAX_VALUE;
+    private int g;
+    private int f;
+    private int h;
+    public int x;
+    public int y;
+    private Node parent;
 
-    public int x = 0;
-    public int y = 0;
-
-    private Map<Node, Double> adjacentNodes = new HashMap<>();
-
-    private ArrayList<Node> shortestPath = new ArrayList<>();
-
-    public Node(Integer x, Integer y) {
+    public Node(int x, int y) {
+        super();
         this.x = x;
         this.y = y;
     }
 
-    public void addDestination(Node destination) {
-        Double distance = Math.sqrt(Math.pow(destination.getX() - this.x, 2) + Math.pow(destination.getY() - this.y, 2));
-        //System.out.println(distance);
-        adjacentNodes.put(destination, distance);
+    public Node offset(int x, int y) {
+        return new Node(x + x, this.y + y);
     }
 
-    public Double getDistance() {
-        return distance;
+    public void calculateHeuristic(Node finalNode) {
+        this.h = Math.abs(finalNode.x - x) + Math.abs(finalNode.y - y);
     }
 
-    public void setDistance(Double distance) {
-        this.distance = distance;
+    public void setNodeData(Node currentNode, int cost) {
+        int gCost = currentNode.getG() + cost;
+        setParent(currentNode);
+        setG(gCost);
+        calculateFinalCost();
     }
 
-    public int getX() {
-        return x;
+    public boolean checkBetterPath(Node currentNode, int cost) {
+        int gCost = currentNode.getG() + cost;
+        if (gCost < getG()) {
+            setNodeData(currentNode, cost);
+            return true;
+        }
+        return false;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public Map<Node, Double> getAdjacentNodes() {
-        return adjacentNodes;
-    }
-
-    public List<Node> getShortestPath() {
-        return shortestPath;
-    }
-
-    public void setShortestPath(ArrayList<Node> shortestPath) {
-        this.shortestPath = shortestPath;
+    private void calculateFinalCost() {
+        int finalCost = getG() + getH();
+        setF(finalCost);
     }
 
     @Override
-    public String toString() {
-        return "("+x+","+y+")";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return Objects.equals(x, node.x) && Objects.equals(y, node.y);
+    public boolean equals(Object arg0) {
+        Node other = (Node) arg0;
+        return x == other.x && this.y == other.y;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
     }
+
+    @Override
+    public String toString() {
+        return x + " " + y;
+    }
+
+    public int getH() {
+        return h;
+    }
+
+    public void setH(int h) {
+        this.h = h;
+    }
+
+    public int getG() {
+        return g;
+    }
+
+    public void setG(int g) {
+        this.g = g;
+    }
+
+    public int getF() {
+        return f;
+    }
+
+    public void setF(int f) {
+        this.f = f;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+
 }
