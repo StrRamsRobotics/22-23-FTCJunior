@@ -1,31 +1,31 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import android.util.Pair;
-
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 import org.firstinspires.ftc.teamcode.graph.Dijkstra;
 import org.firstinspires.ftc.teamcode.graph.Graph;
 import org.firstinspires.ftc.teamcode.graph.Node;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 @Autonomous(name = "testgrid")
+
 public class DijkstraRoadrunnerTest extends LinearOpMode {
-    public static SampleTankDrive drive;
+    private Graph graph = new Graph();
+    private SampleTankDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DijkstraRoadrunnerTest.drive = new SampleTankDrive(hardwareMap);
-        Graph graph = new Graph(); //field grid
+        drive = new SampleTankDrive(hardwareMap);
+        waitForStart();
         for (int i = -60; i <= 60; i += 24) {
             for (int j = -60; j <= 60; j += 24) {
                 Node cur = new Node(i, j);
@@ -36,7 +36,7 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                         new Node(i, j - 24)
                 };
                 for (Node next : nexts) {
-                    if (Math.abs(next.getY())<=60 && Math.abs(next.getX())<=60) {
+                    if (Math.abs(next.getY()) <= 60 && Math.abs(next.getX()) <= 60) {
                         cur.addDestination(next);
                         next.addDestination(cur);
                         if (!graph.getNodes().contains(next)) {
@@ -49,51 +49,61 @@ public class DijkstraRoadrunnerTest extends LinearOpMode {
                                     break;
                                 }
                             }
-                            old.getAdjacentNodes().putAll(next.getAdjacentNodes());
-
+                            old.addDestination(cur);
+                            cur.addDestination(old);
                         }
 
                     }
                 }
             }
         }
-        HashMap<Pair, List<Node>> map = new HashMap<>();
-        for (Node n : graph.getNodes()) {
-                Dijkstra.calculateShortestPathFromSource(graph, n);
-                for (Node n2 : graph.getNodes()) {
-                    if (n==n2) continue;
-                    Pair key = new Pair(n, n2);
-                    map.put(key, n2.getShortestPath());
-                }
-        }
+        Telemetry t = FtcDashboard.getInstance().getTelemetry();
+        t.addData("a", "built");
+        t.update();
+        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d(12, 12, 0));
+        Node start = findNode(12, 12), end = findNode(60, 60);
+        t.addData(start.x + " " + start.y, end.x+ " " + end.y);
+        t.update();
+        List<Node> path = getpath(start, end);
 
-        TrajectoryBuilder builder = drive.trajectoryBuilder(new Pose2d());
-        List<Node> path = map.get(new Pair(new Node(12, 12), new Node(12, -12)));
+        path.remove(0);
+        path.add(end);
         for (Node n : path) {
-            builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getRawExternalHeading());
+            builder.splineTo(new Vector2d(n.getX(), n.getY()), drive.getPoseEstimate().getHeading());
         }
+
+
         drive.followTrajectory(builder.build());
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.put("a", "done");
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+        while (opModeIsActive()) {
 
+        }
     }
-    private static class Pair {
-        private final Node one, two;
 
-        private Pair(Node one, Node two) {
-            this.one = one;
-            this.two = two;
+    private Node findNode(int x, int y) {
+        for (Node n : graph.getNodes()) {
+            if (n.x == x && n.y == y) {
+                return n;
+            }
         }
+        return null;
+    }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Pair pair = (Pair) o;
-            return Objects.equals(one, pair.one) && Objects.equals(two, pair.two);
+    private List<Node> getpath(Node from, Node to) {
+        Dijkstra.calculateShortestPathFromSource(graph, from);
+        for (Node n : graph.getNodes()) {
+            if (n.equals(to)) {
+                List<Node> path = n.getShortestPath();
+                TelemetryPacket p = new TelemetryPacket();
+                for (Node n2 : path) {
+                    p.put("path", n2.toString());
+                }
+                FtcDashboard.getInstance().sendTelemetryPacket(p);
+                return path;
+            }
         }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(one, two);
-        }
+        return null;
     }
 }
