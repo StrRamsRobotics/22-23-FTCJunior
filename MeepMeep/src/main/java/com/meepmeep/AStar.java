@@ -2,12 +2,7 @@ package com.meepmeep;
 
 import java.util.*;
 
-/**
- * A Star Algorithm
- *
- * @author Marcelo Surriabre
- * @version 2.1, 2017-02-23
- */
+
 public class AStar {
     private static int DEFAULT_HV_COST = 10; // Horizontal - Vertical Cost
     private static int DEFAULT_DIAGONAL_COST = 14;
@@ -80,13 +75,13 @@ public class AStar {
     private void addAdjacentLowerRow(Node currentNode) {
         int x = currentNode.x;
         int y = currentNode.y;
-        int lowerX = x + 1;
+        int lowerX = x + 12;
         if (Math.abs(lowerX) <= xBound) {
-            if (Math.abs(y - 1) <= yBound) {
-                checkNode(currentNode, y - 1, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+            if (Math.abs(y - 12) <= yBound) {
+                checkNode(currentNode, y - 12, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
-            if (Math.abs(y + 1) <= yBound) {
-                checkNode(currentNode, y + 1, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+            if (Math.abs(y + 12) <= yBound) {
+                checkNode(currentNode, y + 12, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
             checkNode(currentNode, y, lowerX, getHvCost());
         }
@@ -95,24 +90,24 @@ public class AStar {
     private void addAdjacentMiddleRow(Node currentNode) {
         int x = currentNode.x;
         int y = currentNode.y;
-        if (Math.abs(y - 1) <= yBound) {
-            checkNode(currentNode, y - 1, x, getHvCost());
+        if (Math.abs(y - 12) <= yBound) {
+            checkNode(currentNode, y - 12, x, getHvCost());
         }
-        if (Math.abs(y + 1) <= yBound) {
-            checkNode(currentNode, y + 1, x, getHvCost());
+        if (Math.abs(y + 12) <= yBound) {
+            checkNode(currentNode, y + 12, x, getHvCost());
         }
     }
 
     private void addAdjacentUpperRow(Node currentNode) {
         int x = currentNode.x;
         int y = currentNode.y;
-        int upperRow = x - 1;
+        int upperRow = x - 12;
         if (upperRow >= 0) {
-            if (Math.abs(y - 1) <= yBound) {
-                checkNode(currentNode, y - 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+            if (Math.abs(y - 12) <= yBound) {
+                checkNode(currentNode, y - 12, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
             }
-            if (Math.abs(y + 1) <= yBound) {
-                checkNode(currentNode, y + 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+            if (Math.abs(y + 12) <= yBound) {
+                checkNode(currentNode, y + 12, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
             }
             checkNode(currentNode, y, upperRow, getHvCost());
         }
@@ -121,8 +116,16 @@ public class AStar {
     private void checkNode(Node currentNode, int y, int x, int cost) {
         Node adjacentNode = new Node(x, y);
         adjacentNode.calculateHeuristic(finalNode);
-        boolean block = blocks.contains(adjacentNode);
-        if (!block && !getClosedSet().contains(adjacentNode)) {
+        Node cur = adjacentNode, prev = currentNode;
+        for (Node block : blocks) {
+            double distance = (Math.abs((cur.x - prev.x) * (prev.y - block.y) - (prev.x - block.x) * (cur.y - prev.y))) / (Math.sqrt(Math.pow(cur.x - prev.x, 2) + Math.pow(cur.y - prev.y, 2)));
+            //1 inch wiggle room is given here (distance<1)
+            //currently set to 0 because for some reason it gives a shorter path if you set block radius to 11 instead of 8
+            if (distance<=11 && prev.x <= block.x && cur.x >= block.x && prev.y <= block.y && cur.y >= block.y) {
+                return;
+            }
+        }
+        if (!getClosedSet().contains(adjacentNode)) {
             if (!getOpenList().contains(adjacentNode)) {
                 adjacentNode.setNodeData(currentNode, cost);
                 getOpenList().add(adjacentNode);
