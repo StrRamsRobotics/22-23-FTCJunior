@@ -10,8 +10,34 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBui
 import java.util.ArrayList;
 
 public class MeepMeepTest {
-    public static void main(String[] args) {
+    private static boolean isDivisible(int num, int divisor) {
+        return num % divisor == 0;
+    }
+    public static ArrayList<Node> getPath(Node initialNode, Node finalNode) {
+        AStar aStar = new AStar(64, 64, initialNode, finalNode);
+        for (int i = -48; i <= 48; i += 24) {
+            for (int j = -48; j <= 48; j += 24) {
+                if (isDivisible(i, 48) && isDivisible(j, 48)) {
+                    aStar.setBlock(i, j, 1);
+                    System.out.format("%d %d is a ground junction\n", i, j);
+                } else if ((Math.abs(i) == 24 || Math.abs(j) == 24) && (i == 0 || j == 0)) {
+                    System.out.format("%d %d is a high junction\n", i, j);
+                    aStar.setBlock(i, j, 33.5);
+                } else if (Math.abs(i) == 24 && Math.abs(j) == 24) {
+                    System.out.format("%d %d is a medium junction\n", i, j);
+                    aStar.setBlock(i, j, 23.5);
+                } else {
+                    System.out.format("%d %d is a low junction\n", i, j);
+                    aStar.setBlock(i, j, 13.5);
+                }
+            }
+        }
+        ArrayList<Node> path = aStar.findPath();
+        path.remove(initialNode);
+        return path;
+    }
 
+    public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -19,27 +45,8 @@ public class MeepMeepTest {
                 .followTrajectorySequence(drive -> {
                     TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(new Pose2d(-60, -60)); //path won't gen at 0, 0 bc 0,0 is a ground junction
                     Node initialNode = new Node(-60, -60);
-                    Node finalNode = new Node(36, -12);
-                    AStar aStar = new AStar(64, 64, initialNode, finalNode);
-                    for (int i = -48; i <= 48; i += 24) {
-                        for (int j = -48; j <= 48; j += 24) {
-                            aStar.setBlock(i, j);
-                        }
-                    }
-                  /*  ArrayList<Node> blocks = new ArrayList<>();
-                    for (int i = -64; i <= 64; i++) {
-                        for (int j = -64; j <= 64; j++) {
-                            for (Node ref : start) {
-                                if (Math.sqrt(Math.pow(i - ref.x, 2) + Math.pow(j - ref.y, 2)) <= 11) { //8 inch robot radius + 3 inch radius junction
-                                    aStar.setBlock(i, j);
-                                    blocks.add(new Node(i, j));
-                                }
-                            }
-                        }
-                    }*/
-
-                    ArrayList<Node> path = aStar.findPath();
-                    path.remove(initialNode);
+                    Node finalNode = new Node(48, 36);
+                    ArrayList<Node> path = getPath(initialNode, finalNode);
                     for (Node n : path) {
                         builder.lineTo(new Vector2d(n.x, n.y));
                     }
