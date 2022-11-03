@@ -1,3 +1,7 @@
+package com.meepmeep;
+
+import java.util.Objects;
+
 /**
  * Node Class
  *
@@ -9,24 +13,22 @@ public class Node {
     private int g;
     private int f;
     private int h;
-    private int row;
-    private int col;
-    private double height;
-    private boolean isBlock;
+    public int x;
+    public int y;
     private Node parent;
 
-    public Node(int row, int col) {
+    public Node(int x, int y) {
         super();
-        this.row = row;
-        this.col = col;
+        this.x = x;
+        this.y = y;
     }
 
-    public Node offset(int row, int col) {
-        return new Node(this.getRow() + row, this.getCol() + col);
+    public Node offset(int x, int y) {
+        return new Node(x + x, this.y + y);
     }
 
     public void calculateHeuristic(Node finalNode) {
-        this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
+        this.h = Math.abs(finalNode.x - x) + Math.abs(finalNode.y - y);
     }
 
     public void setNodeData(Node currentNode, int cost) {
@@ -53,12 +55,17 @@ public class Node {
     @Override
     public boolean equals(Object arg0) {
         Node other = (Node) arg0;
-        return this.getRow() == other.getRow() && this.getCol() == other.getCol();
+        return x == other.x && this.y == other.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     @Override
     public String toString() {
-        return "Node [row=" + row + ", col=" + col + "]";
+        return x + " " + y;
     }
 
     public int getH() {
@@ -93,35 +100,4 @@ public class Node {
         this.parent = parent;
     }
 
-    public boolean isBlock() {
-        return isBlock;
-    }
-
-    public void setBlock(boolean isBlock) {
-        this.isBlock = isBlock;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-    
-    public double getHeight() {
-        return this.height;
-    }
 }
