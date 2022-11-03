@@ -4,12 +4,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
+import org.firstinspires.ftc.teamcode.graph.AStar;
+import org.firstinspires.ftc.teamcode.opmodes.auto.DijkstraRoadrunnerTest;
 
 @TeleOp(name = "Joystick")
 public class Joystick extends LinearOpMode {
 
     DcMotor left, right; //2wd for now
+    boolean processing;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -25,6 +29,15 @@ public class Joystick extends LinearOpMode {
             float rightx = gamepad1.right_stick_x, lefty = -gamepad1.left_stick_y;
             left.setPower(rightx + lefty);
             right.setPower(-rightx + lefty);
+            if (gamepad1.a && !processing) {
+                processing = true;
+                pressButton(DijkstraRoadrunnerTest.aStar, DijkstraRoadrunnerTest.drive);
+                processing = false;
+            }
         }
+    }
+
+    private void pressButton(AStar aStar, SampleTankDrive drive) {
+        //javier
     }
 }

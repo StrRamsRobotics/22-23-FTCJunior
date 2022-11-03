@@ -15,8 +15,15 @@ public class Node {
     private int h;
     public int x;
     public int y;
+    public double height;
     private Node parent;
 
+    public Node(int x, int y,double height) {
+        super();
+        this.x = x;
+        this.y = y;
+        this.height=height;
+    }
     public Node(int x, int y) {
         super();
         this.x = x;
