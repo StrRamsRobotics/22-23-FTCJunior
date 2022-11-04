@@ -79,10 +79,10 @@ public class AStar {
 
         if (Math.abs(lowerX) <= xBound) {
             if (Math.abs(y - spacing) <= yBound) {
-                checkNode(currentNode, y - spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+                //checkNode(currentNode, y - spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
             if (Math.abs(y + spacing) <= yBound) {
-                checkNode(currentNode, y + spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+                //checkNode(currentNode, y + spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
 
             checkNode(currentNode, y, lowerX, getHvCost());
@@ -108,10 +108,10 @@ public class AStar {
         int y = currentNode.y;
         int upperRow = x - spacing;
         if (Math.abs(y - spacing) <= yBound) {
-            checkNode(currentNode, y - spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+            //checkNode(currentNode, y - spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
         }
         if (Math.abs(y + spacing) <= yBound) {
-            checkNode(currentNode, y + spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+            //checkNode(currentNode, y + spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
         }
 
         checkNode(currentNode, y, upperRow, getHvCost());
