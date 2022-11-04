@@ -11,7 +11,7 @@ public class StartRightRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(32, -64));
+        drive.setPoseEstimate(new Pose2d(32, -64,Math.toRadians(90)));
         DijkstraRoadrunnerTest.run(drive,telemetry);
     }
 }

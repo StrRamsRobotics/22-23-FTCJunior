@@ -39,7 +39,6 @@ public class AStar {
     }
 
 
-
     public ArrayList<Node> findPath() {
         openList.add(initialNode);
         while (!isEmpty(openList)) {
@@ -86,7 +85,7 @@ public class AStar {
                 checkNode(currentNode, y + spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
 
-                checkNode(currentNode, y, lowerX, getHvCost());
+            checkNode(currentNode, y, lowerX, getHvCost());
 
         }
     }
@@ -95,11 +94,11 @@ public class AStar {
         int x = currentNode.x;
         int y = currentNode.y;
         if (Math.abs(y - spacing) <= yBound) {
-                checkNode(currentNode, y - spacing, x, getHvCost());
+            checkNode(currentNode, y - spacing, x, getHvCost());
         }
         if (Math.abs(y + spacing) <= yBound) {
 
-                checkNode(currentNode, y + spacing, x, getHvCost());
+            checkNode(currentNode, y + spacing, x, getHvCost());
 
         }
     }
@@ -115,7 +114,7 @@ public class AStar {
             checkNode(currentNode, y + spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
         }
 
-            checkNode(currentNode, y, upperRow, getHvCost());
+        checkNode(currentNode, y, upperRow, getHvCost());
 
 
     }
@@ -157,7 +156,7 @@ public class AStar {
     }
 
     public void setBlock(int x, int y, double h) {
-        blocks.add(new Node(x, y,h));
+        blocks.add(new Node(x, y, h));
     }
 
     public Node getInitialNode() {
