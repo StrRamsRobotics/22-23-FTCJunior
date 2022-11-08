@@ -17,6 +17,6 @@ public class StartLeftBlue extends LinearOpMode {
         drive.setPoseEstimate(new Pose2d(-32, 64,Math.toRadians(-90)));
         telemetry.addData("started opmode", "a");
         telemetry.update();
-        DijkstraRoadrunnerTest.run(drive,telemetry);
+        Pathfinding.run(drive,telemetry);
     }
 }

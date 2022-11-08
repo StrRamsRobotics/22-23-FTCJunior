@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 import org.firstinspires.ftc.teamcode.graph.AStar;
-import org.firstinspires.ftc.teamcode.opmodes.auto.DijkstraRoadrunnerTest;
+import org.firstinspires.ftc.teamcode.opmodes.auto.Pathfinding;
 
 @TeleOp(name = "Joystick")
 public class Joystick extends LinearOpMode {
@@ -31,7 +31,7 @@ public class Joystick extends LinearOpMode {
             right.setPower(-rightx + lefty);
             if (gamepad1.a && !processing) {
                 processing = true;
-                pressButton(DijkstraRoadrunnerTest.aStar, DijkstraRoadrunnerTest.drive);
+                pressButton(Pathfinding.aStar, Pathfinding.drive);
                 processing = false;
             }
         }
