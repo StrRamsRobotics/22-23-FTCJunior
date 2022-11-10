@@ -15,26 +15,29 @@ import java.util.ArrayList;
 public class Pathfinding {
     public static AStar aStar;
     public static SampleTankDrive drive;
-    public static void run(SampleTankDrive drive,Telemetry telemetry){
-
+    public static void run(SampleTankDrive drive){
         Pathfinding.drive = drive;
-        telemetry.addData("run","");
-        telemetry.update();
-        Node initialNode = new Node((int)drive.getPoseEstimate().getX(), (int)drive.getPoseEstimate().getY());
-        Node finalNode = new Node(-60, -60);
-        TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(drive.getPoseEstimate()); //path won't gen at 0, 0 bc 0,0 is a ground junction
+        go(-60,-60);
 
-        AStar aStar = new AStar(64, 64, initialNode, finalNode);
-        for (int i = -48; i <= 48; i += 24) {
-            for (int j = -48; j <= 48; j += 24) {
-                if (i % 48 == 0 && j % 48 == 0) {
-                    aStar.setBlock(i, j, 1);
-                } else if ((Math.abs(i) == 24 || Math.abs(j) == 24) && (i == 0 || j == 0)) {
-                    aStar.setBlock(i, j, 33.5);
-                } else if (Math.abs(i) == 24 && Math.abs(j) == 24) {
-                    aStar.setBlock(i, j, 23.5);
-                } else {
-                    aStar.setBlock(i, j, 13.5);
+    }
+
+    private static void go(int x, int y) {
+        Node initialNode = new Node((int) drive.getPoseEstimate().getX(), (int) drive.getPoseEstimate().getY());
+        Node finalNode = new Node(x, y);
+        TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(drive.getPoseEstimate()); //path won't gen at 0, 0 bc 0,0 is a ground junction
+        if (aStar==null) {
+            aStar = new AStar(64, 64, initialNode, finalNode);
+            for (int i = -48; i <= 48; i += 24) {
+                for (int j = -48; j <= 48; j += 24) {
+                    if (i % 48 == 0 && j % 48 == 0) {
+                        aStar.setBlock(i, j, 1);
+                    } else if ((Math.abs(i) == 24 || Math.abs(j) == 24) && (i == 0 || j == 0)) {
+                        aStar.setBlock(i, j, 33.5);
+                    } else if (Math.abs(i) == 24 && Math.abs(j) == 24) {
+                        aStar.setBlock(i, j, 23.5);
+                    } else {
+                        aStar.setBlock(i, j, 13.5);
+                    }
                 }
             }
         }
@@ -63,8 +66,8 @@ public class Pathfinding {
         assert path.size() <= 3; //a* paths should only have 1 turn now so i don't think we have to account for path.size()>3
         Node n = path.get(0), next1 = path.get(1);
         double initialRot = Math.atan2(next1.y - n.y, next1.x - n.x);
-        if (Math.abs(initialRot-drive.getPoseEstimate().getHeading())>=0.01) {
-            builder.turn(initialRot-drive.getPoseEstimate().getHeading()); //correct starting heading
+        if (Math.abs(initialRot- drive.getPoseEstimate().getHeading())>=0.01) {
+            builder.turn(initialRot- drive.getPoseEstimate().getHeading()); //correct starting heading
         }
         if (path.size() > 2) { //aka you have to turn
             Node next2 = path.get(2);
@@ -92,9 +95,6 @@ public class Pathfinding {
         }
         path.remove(initialNode);
         drive.followTrajectorySequence(builder.build());
-        telemetry.addData("done","");
-        telemetry.update();
-
     }
 
 }

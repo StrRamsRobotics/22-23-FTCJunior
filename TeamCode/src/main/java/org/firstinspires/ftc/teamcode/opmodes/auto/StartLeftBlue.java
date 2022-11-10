@@ -15,8 +15,6 @@ public class StartLeftBlue extends LinearOpMode {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
         waitForStart();
         drive.setPoseEstimate(new Pose2d(-32, 64,Math.toRadians(-90)));
-        telemetry.addData("started opmode", "a");
-        telemetry.update();
-        Pathfinding.run(drive,telemetry);
+        Pathfinding.run(drive);
     }
 }
