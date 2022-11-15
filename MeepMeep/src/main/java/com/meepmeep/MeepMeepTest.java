@@ -17,10 +17,10 @@ public class MeepMeepTest {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive -> {
-                    Node initialNode = new Node(-48, -60);
-                    Node finalNode = new Node(-48, -12);
-                    drive.setPoseEstimate(new Pose2d(initialNode.x, initialNode.y, Math.toRadians(0)));
-                    TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(new Pose2d(initialNode.x, initialNode.y, Math.toRadians(0))); //path won't gen at 0, 0 bc 0,0 is a ground junction
+                    Node initialNode = new Node(60, 60);
+                    Node finalNode = new Node(-60, -60);
+                    drive.setPoseEstimate(new Pose2d(initialNode.x, initialNode.y, Math.toRadians(90)));
+                    TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(new Pose2d(initialNode.x, initialNode.y, Math.toRadians(90))); //path won't gen at 0, 0 bc 0,0 is a ground junction
 
                     AStar aStar = new AStar(64, 64, initialNode, finalNode);
                     for (int i = -48; i <= 48; i += 24) {
@@ -36,39 +36,57 @@ public class MeepMeepTest {
                             }
                         }
                     }
-                    //special blocks
-                    aStar.setBlock(36, 36, 0);
-                    aStar.setBlock(-36, 36, 0);
-                    aStar.setBlock(36, -36, 0);
-                    aStar.setBlock(-36, -36, 0);
                     ArrayList<Node> path = aStar.findPath();
+                    path.remove(initialNode);
+                    ArrayList<Node> toRemove = new ArrayList<>();
+                    if (path.size() > 1) {
+                        Node prev = initialNode, ref = initialNode;
+                        for (Node cur : path) {
+                            if (!(ref.x == cur.x || ref.y == cur.y)) {
+                                ref = cur;
+                                toRemove.remove(prev);
+                            }
+                            toRemove.add(cur);
+                            prev = cur;
+                        }
+                    }
+                    path.removeAll(toRemove);
                     if (!path.contains(finalNode)) {
                         path.add(finalNode);
                     }
-                    assert path.size() > 1; //size==1 means initialnode=finalnode
-                    Node start = path.get(0), second = path.get(1);
-                    double headingEstimate = Math.atan2(second.y - start.y, second.x - start.x);
-                    if (Math.abs(headingEstimate - drive.getPoseEstimate().getHeading()) >= 0.01) {
-                        builder.turn(headingEstimate - drive.getPoseEstimate().getHeading()); //correct starting heading
+                    if (!path.contains(initialNode)) {
+                        path.add(0, initialNode);
+                    }
+                    assert path.size()>1; //size==1 means initialnode=finalnode
+                    assert path.size() <= 3; //a* paths should only have 1 turn now so i don't think we have to account for path.size()>3
+                    Node n = path.get(0), next1 = path.get(1);
+                    double initialRot = Math.atan2(next1.y - n.y, next1.x - n.x);
+                    if (Math.abs(initialRot-drive.getPoseEstimate().getHeading())>=0.01) {
+                        builder.turn(initialRot-drive.getPoseEstimate().getHeading()); //correct starting heading
                     }
                     if (path.size() > 2) { //aka you have to turn
-                        for (int i = 0; i < path.size() - 2; i++) {
-                            Node n = path.get(i), next1 = path.get(i + 1), next2 = path.get(i + 2);
-                            //math.atan2 gets around tan(90) being undefined
-                            double rot = Math.atan2(next2.y - next1.y, next2.x - next1.x);
-                            if (Math.abs(rot - headingEstimate) >= 0.01) {
-
-                                builder.splineTo(new Vector2d(next2.x, next2.y), rot);
-                                headingEstimate = rot;
+                        Node next2 = path.get(2);
+                        //math.atan2 gets around tan(90) being undefined
+                        double rot = Math.atan2(next2.y - next1.y, next2.x - next1.x);
+                        if (Math.abs(rot - drive.getPoseEstimate().getHeading()) >= 0.01) {
+                            double step1X = next1.x, step2X = next1.x, step1Y = next1.y, step2Y = next1.y;
+                            if (Math.abs(next1.x - n.x) >= 0.01) { //offset in opposite direction
+                                step1X += next1.x < n.x ? 12 : -12;
                             } else {
-                                double firstDis = Math.max(Math.abs(next1.x - n.x), Math.abs(next1.x - n.y));
-                                if (firstDis > 0.01) {
-                                    builder.forward(firstDis);
-                                }
+                                step1Y += next1.y < n.y ? 12 : -12;
                             }
+                            if (Math.abs(next2.x - next1.x) >= 0.01) { //offset in same direction
+                                step2X += next2.x < next1.x ? -12 : 12;
+                            } else {
+                                step2Y += next2.y < next1.y ? -12 : 12;
+                            }
+                            builder.forward(Math.abs(step1X - n.x) + Math.abs(step1Y - n.y));
+                            builder.splineTo(new Vector2d(step2X, step2Y), rot);
+                            builder.forward(Math.max(Math.abs(next2.x - step2X), Math.abs(next2.y - step2Y)));
+
                         }
                     } else {
-                        builder.forward(Math.max(Math.abs(second.x - start.x), Math.abs(second.y - start.y))); //if the path is just a straight line
+                        builder.forward(Math.max(Math.abs(next1.x - n.x),Math.abs(next1.y - n.y))); //if the path is just a straight line
                     }
                     path.remove(initialNode);
                     /* example of rounded corners:
