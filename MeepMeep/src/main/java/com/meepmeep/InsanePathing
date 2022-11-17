@@ -1,0 +1,12 @@
+package com.meepmeep;
+
+import java.util.ArrayList;
+
+public class InsanePathing {
+    public static ArrayList<Node> getPath(Node initialNode, Node finalNode) {
+        ArrayList<Node> path = new ArrayList<>();
+        path.add(new Node(initialNode.x, finalNode.y));
+        path.add(new Node(finalNode.x, finalNode.y));
+        return path;
+    }
+}
