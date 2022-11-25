@@ -39,7 +39,6 @@ public class AStar {
     }
 
 
-
     public ArrayList<Node> findPath() {
         openList.add(initialNode);
         while (!isEmpty(openList)) {
@@ -80,13 +79,13 @@ public class AStar {
 
         if (Math.abs(lowerX) <= xBound) {
             if (Math.abs(y - spacing) <= yBound) {
-                checkNode(currentNode, y - spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+                //checkNode(currentNode, y - spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
             if (Math.abs(y + spacing) <= yBound) {
-                checkNode(currentNode, y + spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+                //checkNode(currentNode, y + spacing, lowerX, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }
 
-                checkNode(currentNode, y, lowerX, getHvCost());
+            checkNode(currentNode, y, lowerX, getHvCost());
 
         }
     }
@@ -95,11 +94,11 @@ public class AStar {
         int x = currentNode.x;
         int y = currentNode.y;
         if (Math.abs(y - spacing) <= yBound) {
-                checkNode(currentNode, y - spacing, x, getHvCost());
+            checkNode(currentNode, y - spacing, x, getHvCost());
         }
         if (Math.abs(y + spacing) <= yBound) {
 
-                checkNode(currentNode, y + spacing, x, getHvCost());
+            checkNode(currentNode, y + spacing, x, getHvCost());
 
         }
     }
@@ -108,15 +107,15 @@ public class AStar {
         int x = currentNode.x;
         int y = currentNode.y;
         int upperRow = x - spacing;
-        if (Math.abs(upperRow)<=xBound) {
-            if (Math.abs(y - spacing) <= yBound) {
-                checkNode(currentNode, y - spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
-            }
-            if (Math.abs(y + spacing) <= yBound) {
-                checkNode(currentNode, y + spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
-            }
-            checkNode(currentNode, y, upperRow, getHvCost());
+        if (Math.abs(y - spacing) <= yBound) {
+            //checkNode(currentNode, y - spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
         }
+        if (Math.abs(y + spacing) <= yBound) {
+            //checkNode(currentNode, y + spacing, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+        }
+
+        checkNode(currentNode, y, upperRow, getHvCost());
+
 
     }
 
@@ -125,7 +124,7 @@ public class AStar {
         adjacentNode.calculateHeuristic(finalNode);
         Node cur = adjacentNode, prev = currentNode;
         for (Node block : blocks) {
-            double distance = (Math.abs((cur.x - prev.x) * (prev.y - block.y) - (prev.x - block.x) * (cur.y - prev.y))) / (Math.sqrt((cur.x - prev.x)*(cur.x - prev.x) + (cur.y - prev.y)*(cur.y - prev.y)));
+            double distance = (Math.abs((cur.x - prev.x) * (prev.y - block.y) - (prev.x - block.x) * (cur.y - prev.y))) / (Math.sqrt(Math.pow(cur.x - prev.x, 2) + Math.pow(cur.y - prev.y, 2)));
             //1 inch wiggle room is given here (distance<1)
             //currently set to 0 because for some reason it gives a shorter path if you set block radius to 11 instead of 8
             if (distance <= 11 && prev.x <= block.x && cur.x >= block.x && prev.y <= block.y && cur.y >= block.y) {
@@ -157,7 +156,7 @@ public class AStar {
     }
 
     public void setBlock(int x, int y, double h) {
-        blocks.add(new Node(x, y,h));
+        blocks.add(new Node(x, y, h));
     }
 
     public Node getInitialNode() {

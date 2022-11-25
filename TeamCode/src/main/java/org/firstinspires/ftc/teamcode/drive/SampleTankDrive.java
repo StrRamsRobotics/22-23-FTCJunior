@@ -142,9 +142,9 @@ public class SampleTankDrive extends TankDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        for (DcMotorEx motor : leftMotors) { //done
+       /* for (DcMotorEx motor : leftMotors) { //done
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
+        }*/
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 

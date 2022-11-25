@@ -23,9 +23,9 @@ public class MeepMeepTest {
         DriveShim drive = myBot.getDrive();
         Node cones = new Node(60, 12);
         Node junction = new Node(36, 12);
-        TrajectorySequence first = pathfind(drive, new Pose2d(36, 60), cones).build();
-        myBot.followTrajectorySequence(first);
-        TrajectorySequence second = pathfind(drive, first.end(), junction).build();
+//        TrajectorySequence first = pathfind(drive, new Pose2d(36, 60), cones).build();
+//        myBot.followTrajectorySequence(first);
+        TrajectorySequence second = pathfind(drive, new Pose2d(36,60), cones).build();
         myBot.followTrajectorySequence(second);
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)

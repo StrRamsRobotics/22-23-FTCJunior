@@ -13,6 +13,6 @@ public class StartRightRed extends LinearOpMode {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
         waitForStart();
         drive.setPoseEstimate(new Pose2d(32, -64,Math.toRadians(90)));
-        Pathfinding.run(drive);
+        Pathfinding.run(drive,hardwareMap,Positions.RIGHT_RED);
     }
 }
