@@ -13,38 +13,23 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.Pathfinding;
 @TeleOp(name = "Joystick")
 public class Joystick extends LinearOpMode {
 
-    DcMotor left, right; //2wd for now
     boolean processing;
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleTankDrive drive = new SampleTankDrive(hardwareMap);
-        left = hardwareMap.get(DcMotor.class, "left");
-        right = hardwareMap.get(DcMotor.class, "right");
-        left.setDirection(DcMotorSimple.Direction.REVERSE);
-        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         waitForStart();
 
 
         while (opModeIsActive()) {
-            /*drive.setWeightedDrivePower(
+            drive.setWeightedDrivePower(
                     new Pose2d(
                             -gamepad1.left_stick_y,
                             0,
                             -gamepad1.right_stick_x
                     )
-            );*/
-            left.setPower(-gamepad1.left_stick_y);
-            right.setPower(-gamepad1.right_stick_y);
-           /* float rightx = gamepad1.right_stick_x, lefty = -gamepad1.left_stick_y;
-            if (rightx<0.1) rightx=0;
-            if (lefty<0.1) lefty=0;
-            telemetry.addData("left",rightx + lefty);
-            telemetry.addData("right", -rightx + lefty);
-            telemetry.update();
-            left.setPower(rightx + lefty);
-            right.setPower(rightx + lefty);*/
+            );
             if (gamepad1.a && !processing) {
                 processing = true;
                 pressButton(Pathfinding.aStar, Pathfinding.drive);

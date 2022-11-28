@@ -29,7 +29,7 @@ public class Pathfinding {
         Intake.init(hardwareMap);
         Pathfinding.drive = drive;
         Pathfinding.positions = positions;
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        /*int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createInternalCamera2(OpenCvInternalCamera2.CameraDirection.BACK, cameraMonitorViewId);
         sleeveDetection = new Vision();
         camera.setPipeline(sleeveDetection);
@@ -45,7 +45,7 @@ public class Pathfinding {
             }
         });
         while (sleeveDetection.getPosition() == null) {
-        }
+        }*/
         Vision.ParkingPosition park = sleeveDetection.getPosition();
         drive.setPoseEstimate(positions.start);
         TrajectorySequence prev = pathfind(positions.start, positions.cones).build();
@@ -57,13 +57,16 @@ public class Pathfinding {
             drive.followTrajectorySequence(next);
             cone = !cone;
             if (cone) {
-                //get cone
+                Intake.in();
             } else {
-                //drop cone
+                Intake.up();
+                Intake.out();
+                Intake.down();
             }
             prev = next;
             Thread.sleep(500);
         }
+
         Pose2d parkPos = null;
         int leftOffset;
         if (positions == Positions.LEFT_BLUE || positions == Positions.RIGHT_BLUE) {
@@ -71,6 +74,7 @@ public class Pathfinding {
         } else {
             leftOffset = 24;
         }
+        park= Vision.ParkingPosition.CENTER; //todo temporary
         if (park == Vision.ParkingPosition.CENTER) {
             parkPos = positions.junction;
         } else if (park == Vision.ParkingPosition.RIGHT) {
