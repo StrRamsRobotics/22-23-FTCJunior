@@ -11,7 +11,7 @@ public class Intake {
     private static CRServoImplEx intake;
     private static DcMotor leftLift;
     private static DcMotor rightLift;
-    private static final int TICKS_PER_ROT = 1440;
+    private static final int TICKS_PER_ROT = 20; //1440
 
     public static void init(HardwareMap map) {
         intake = map.get(CRServoImplEx.class, "intake");

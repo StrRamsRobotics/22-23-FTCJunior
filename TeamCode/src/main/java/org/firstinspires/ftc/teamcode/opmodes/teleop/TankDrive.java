@@ -34,6 +34,8 @@ public class TankDrive extends LinearOpMode {
             left2.setPower(lefty);
             right.setPower(righty);
             right2.setPower(righty);
+            telemetry.addData(String.valueOf(lefty), righty);
+            telemetry.update();
             //claw start
 
             /*float leftTrigger = gamepad1.left_trigger, rightTrigger = gamepad1.right_trigger;

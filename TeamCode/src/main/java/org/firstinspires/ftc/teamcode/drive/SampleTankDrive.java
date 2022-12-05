@@ -67,7 +67,7 @@ public class SampleTankDrive extends TankDrive {
 
     private TrajectoryFollower follower;
 
-    private List<DcMotorEx> motors, leftMotors, rightMotors;
+    public List<DcMotorEx> motors, leftMotors, rightMotors;
     private BNO055IMU imu;
 
     private VoltageSensor batteryVoltageSensor;

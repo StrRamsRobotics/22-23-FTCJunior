@@ -25,7 +25,7 @@ public class MeepMeepTest {
         Node junction = new Node(36, 12);
 //        TrajectorySequence first = pathfind(drive, new Pose2d(36, 60), cones).build();
 //        myBot.followTrajectorySequence(first);
-        TrajectorySequence second = pathfind(drive, new Pose2d(36,60), cones).build();
+        TrajectorySequence second = pathfind(drive, new Pose2d(36,60), new Node(12,12)).build();
         myBot.followTrajectorySequence(second);
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
