@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.CRServoImplEx;
 public class ServoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-         CRServoImplEx servo = hardwareMap.get(CRServoImplEx.class,"servo");
-         waitForStart();
+        CRServoImplEx servo = hardwareMap.get(CRServoImplEx.class, "servo");
+        waitForStart();
         servo.setPwmEnable();
         servo.setPower(0.5);
         while (opModeIsActive()) {

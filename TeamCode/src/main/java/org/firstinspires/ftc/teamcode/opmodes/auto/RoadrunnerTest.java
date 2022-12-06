@@ -3,17 +3,16 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name = "RoadrunnerTest")
 public class RoadrunnerTest extends LinearOpMode {
     private SampleTankDrive drive;
+
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SampleTankDrive(hardwareMap);
@@ -34,7 +33,7 @@ public class RoadrunnerTest extends LinearOpMode {
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("a", "done");
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
-       // DijkstraRoadrunnerTest.drive.followTrajectorySequence(sequence);
+        // DijkstraRoadrunnerTest.drive.followTrajectorySequence(sequence);
         while (opModeIsActive()) {
 
         }

@@ -19,12 +19,17 @@ public class Pathfind {
         }
     }
 
+    private static ArrayList<Node> getSimplePath(Node start, Node end) {
+        ArrayList<Node> path = new ArrayList<>();
+        path.add(new Node(start.x, end.y));
+        path.add(new Node(end.x, end.y));
+        return path;
+    }
+
     public static TrajectorySequenceBuilder pathfind(DriveShim drive, Pose2d initialPose, Node finalNode) {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(initialPose);
         Node initialNode = new Node((int) Math.round(initialPose.getX()), (int) Math.round(initialPose.getY()));
-        AStar aStar = new AStar(64, 64, initialNode, finalNode);
-        setBlocks(aStar);
-        ArrayList<Node> path = aStar.findPath();
+        ArrayList<Node> path = getSimplePath(initialNode, finalNode);
         path.remove(initialNode);
         ArrayList<Node> toRemove = new ArrayList<>();
         if (path.size() > 1) {
@@ -57,9 +62,9 @@ public class Pathfind {
             Node n1 = path.get(i);
             //math.atan2 gets around tan(90) being undefined
             double rot = Math.atan2(n1.y - prev.y, n1.x - prev.x);
-            double turnAmount=rot - headingEstimate;
-            if (Math.abs(turnAmount)>Math.PI) {
-                turnAmount=(Math.PI-turnAmount)%(Math.PI*2);
+            double turnAmount = rot - headingEstimate;
+            if (Math.abs(turnAmount) > Math.PI) {
+                turnAmount = (Math.PI - turnAmount) % (Math.PI * 2);
             }
             builder.turn(turnAmount);
             headingEstimate += turnAmount;

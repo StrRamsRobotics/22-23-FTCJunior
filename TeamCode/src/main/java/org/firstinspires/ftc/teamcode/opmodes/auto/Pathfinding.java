@@ -87,12 +87,17 @@ public class Pathfinding {
         }
     }
 
+    private static ArrayList<Node> getSimplePath(Node start, Node end) {
+        ArrayList<Node> path = new ArrayList<>();
+        path.add(new Node(start.x, end.y));
+        path.add(new Node(end.x, end.y));
+        return path;
+    }
+
     private static void pathfind(Pose2d initialPose, Pose2d finalPose) throws InterruptedException {
         Node initialNode = new Node((int) Math.round(initialPose.getX()), (int) Math.round(initialPose.getY()));
         Node finalNode = new Node((int) Math.round(finalPose.getX()), (int) Math.round(finalPose.getY()));
-        AStar aStar = new AStar(64, 64, initialNode, finalNode);
-        setBlocks(aStar);
-        ArrayList<Node> path = aStar.findPath();
+        ArrayList<Node> path = getSimplePath(initialNode, finalNode);
         path.remove(initialNode);
         ArrayList<Node> toRemove = new ArrayList<>();
         if (path.size() > 1) {

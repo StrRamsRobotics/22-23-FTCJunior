@@ -39,6 +39,7 @@ public class AStar {
     }
 
 
+
     public ArrayList<Node> findPath() {
         openList.add(initialNode);
         while (!isEmpty(openList)) {
