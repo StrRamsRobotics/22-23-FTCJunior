@@ -53,17 +53,13 @@ public class Pathfind {
         }
         Node prev = initialNode;
         double headingEstimate = initialRot;
-        boolean start =true;
-        for (Node n1 : path) {
+        for (int i = 1; i < path.size(); i++) {
+            Node n1 = path.get(i);
             //math.atan2 gets around tan(90) being undefined
             double rot = Math.atan2(n1.y - prev.y, n1.x - prev.x);
-            if (start) {
-                start=false;
-                rot=initialRot;
-            }
             double turnAmount=rot - headingEstimate;
             if (Math.abs(turnAmount)>Math.PI) {
-                turnAmount=(-(2*Math.PI-turnAmount))%Math.toRadians(360);
+                turnAmount=(Math.PI-turnAmount)%(Math.PI*2);
             }
             builder.turn(turnAmount);
             headingEstimate += turnAmount;

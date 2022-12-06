@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 
@@ -12,8 +13,9 @@ public class StartLeftBlue extends LinearOpMode {
     //left = from the perspective of the red substation (eepmeep's coord system)
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleTankDrive drive = new SampleTankDrive(hardwareMap);
+        Chassis.init(hardwareMap);
+        Intake.init(hardwareMap);
         waitForStart();
-        Pathfinding.run(drive,hardwareMap,Positions.LEFT_BLUE);
+        Pathfinding.run(Positions.LEFT_BLUE);
     }
 }

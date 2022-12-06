@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
     private static CRServoImplEx intake;
@@ -36,7 +33,7 @@ public class Intake {
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setPower(0.5);
         rightLift.setPower(0.5);
-        while (leftLift.isBusy()&& rightLift.isBusy());
+        while (leftLift.isBusy() && rightLift.isBusy()) ;
         leftLift.setPower(0);
         rightLift.setPower(0);
         leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -50,7 +47,7 @@ public class Intake {
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setPower(-0.5);
         rightLift.setPower(-0.5);
-        while (leftLift.isBusy()&& rightLift.isBusy());
+        while (leftLift.isBusy() && rightLift.isBusy()) ;
         leftLift.setPower(0);
         rightLift.setPower(0);
         leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

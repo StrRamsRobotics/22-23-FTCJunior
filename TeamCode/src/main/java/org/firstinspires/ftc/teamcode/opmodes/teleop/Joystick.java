@@ -32,13 +32,13 @@ public class Joystick extends LinearOpMode {
             );
             if (gamepad1.a && !processing) {
                 processing = true;
-                pressButton(Pathfinding.aStar, Pathfinding.drive);
+                pressButton(Pathfinding.aStar);
                 processing = false;
             }
         }
     }
 
-    private void pressButton(AStar aStar, SampleTankDrive drive) {
+    private void pressButton(AStar aStar) {
         //javier
     }
 }
