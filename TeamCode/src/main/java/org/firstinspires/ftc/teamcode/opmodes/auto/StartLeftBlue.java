@@ -12,6 +12,6 @@ public class StartLeftBlue extends LinearOpMode {
         Chassis.init(hardwareMap);
         Intake.init(hardwareMap);
         waitForStart();
-        Pathfinding.run(Positions.LEFT_BLUE);
+        MainAuto.run(Positions.LEFT_BLUE);
     }
 }

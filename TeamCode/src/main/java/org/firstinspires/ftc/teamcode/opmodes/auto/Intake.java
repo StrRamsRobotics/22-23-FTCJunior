@@ -8,7 +8,7 @@ public class Intake {
     private static CRServoImplEx intake;
     private static DcMotor leftLift;
     private static DcMotor rightLift;
-    private static final int TICKS_PER_ROT = 20; //1440
+    private static final int TICKS_PER_INCH = 20; //don't know
 
     public static void init(HardwareMap map) {
         intake = map.get(CRServoImplEx.class, "intake");
@@ -26,9 +26,9 @@ public class Intake {
         intake.setPower(0);
     }
 
-    public static void up() {
-        leftLift.setTargetPosition(TICKS_PER_ROT * 2);
-        rightLift.setTargetPosition(TICKS_PER_ROT * 2);
+    public static void up(double inches) {
+        leftLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
+        rightLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setPower(0.5);
@@ -40,9 +40,9 @@ public class Intake {
         rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public static void down() {
-        leftLift.setTargetPosition(TICKS_PER_ROT * 2);
-        rightLift.setTargetPosition(TICKS_PER_ROT * 2);
+    public static void down(double inches) {
+        leftLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
+        rightLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setPower(-0.5);

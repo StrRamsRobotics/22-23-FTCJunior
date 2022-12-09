@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class Direction {
     public static void run(double l1, double l2, double r1, double r2, DcMotor left, DcMotor left2, DcMotor right, DcMotor right2) throws InterruptedException {
-        left.setDirection(DcMotorSimple.Direction.REVERSE);
-        left2.setDirection(DcMotorSimple.Direction.REVERSE);
+        right.setDirection(DcMotorSimple.Direction.REVERSE);
+        right2.setDirection(DcMotorSimple.Direction.REVERSE);
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
@@ -15,5 +14,6 @@ public class Output extends LinearOpMode {
         servo.setPower(-0.5);
         Thread.sleep(500);
         servo.setPower(0);
+
     }
 }

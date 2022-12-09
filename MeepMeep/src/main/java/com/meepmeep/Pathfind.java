@@ -26,8 +26,9 @@ public class Pathfind {
         return path;
     }
 
-    public static TrajectorySequenceBuilder pathfind(DriveShim drive, Pose2d initialPose, Node finalNode) {
+    public static TrajectorySequenceBuilder pathfind(DriveShim drive, Pose2d initialPose, Pose2d finalPose) {
         TrajectorySequenceBuilder builder = drive.trajectorySequenceBuilder(initialPose);
+        Node finalNode = new Node((int) Math.round(finalPose.getX()), (int) Math.round(finalPose.getY()));
         Node initialNode = new Node((int) Math.round(initialPose.getX()), (int) Math.round(initialPose.getY()));
         ArrayList<Node> path = getSimplePath(initialNode, finalNode);
         path.remove(initialNode);
@@ -75,6 +76,15 @@ public class Pathfind {
             }
             prev = n1;
         }
+        double endRot=finalPose.getHeading();
+        double turnAmount = endRot - headingEstimate;
+        if (Math.abs(turnAmount)<0.1) {
+            return builder;
+        }
+        if (Math.abs(turnAmount) > Math.PI) {
+            turnAmount = (Math.PI - turnAmount) % (Math.PI * 2);
+        }
+        builder.turn(turnAmount);
         return builder;
     }
 }

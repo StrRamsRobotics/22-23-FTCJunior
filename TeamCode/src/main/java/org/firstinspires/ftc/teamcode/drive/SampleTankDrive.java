@@ -120,12 +120,18 @@ public class SampleTankDrive extends TankDrive {
        // DcMotorEx leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
        // DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         DcMotorEx rightFront = hardwareMap.get(DcMotorEx.class, "right");
-        DcMotorEx  left2=hardwareMap.get(DcMotorEx.class, "left2");
-        DcMotorEx right2 = hardwareMap.get(DcMotorEx.class, "right2");
+        if (true) {
+            DcMotorEx left2 = hardwareMap.get(DcMotorEx.class, "left2");
+            DcMotorEx right2 = hardwareMap.get(DcMotorEx.class, "right2");
 
-        motors = Arrays.asList(leftFront, rightFront, left2, right2);
-        leftMotors = Arrays.asList(leftFront, left2);
-        rightMotors = Arrays.asList(rightFront, right2);
+            motors = Arrays.asList(leftFront, rightFront, left2, right2);
+            leftMotors = Arrays.asList(leftFront, left2);
+            rightMotors = Arrays.asList(rightFront, right2);
+        } else {
+            motors = Arrays.asList(leftFront, rightFront);
+            leftMotors = Arrays.asList(leftFront);
+            rightMotors = Arrays.asList(rightFront);
+        }
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -144,7 +150,7 @@ public class SampleTankDrive extends TankDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        for (DcMotorEx motor : leftMotors) { //done
+        for (DcMotorEx motor : rightMotors) { //done
             motor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         // TODO: if desired, use setLocalizer() to change the localization method

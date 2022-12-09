@@ -10,6 +10,6 @@ public class StartLeftRed extends LinearOpMode {
         Chassis.init(hardwareMap);
         Intake.init(hardwareMap);
         waitForStart();
-        Pathfinding.run(Positions.LEFT_RED);
+        MainAuto.run(Positions.LEFT_RED);
     }
 }

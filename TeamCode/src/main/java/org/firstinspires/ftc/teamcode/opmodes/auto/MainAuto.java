@@ -5,54 +5,68 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.graph.AStar;
 import org.firstinspires.ftc.teamcode.graph.Node;
-import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
 
-public class Pathfinding {
+public class MainAuto {
     public static AStar aStar;
     static Vision sleeveDetection = new Vision();
-    static OpenCvCamera camera;
     static Positions positions;
     static final int MS_PER_INCH = 100;
     static final int MS_PER_45_DEGREES = 200;
 
     public static void run(Positions positions) throws InterruptedException {
 
-        Pathfinding.positions = positions;
-        /*int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createInternalCamera2(OpenCvInternalCamera2.CameraDirection.BACK, cameraMonitorViewId);
-        sleeveDetection = new Vision();
-        camera.setPipeline(sleeveDetection);
-
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        MainAuto.positions = positions;
+ /*       sleeveDetection = new Vision();
+        Chassis.camera.setPipeline(sleeveDetection);
+        Chassis.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                Chassis.camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
             public void onError(int errorCode) {
             }
         });
-        while (sleeveDetection.getPosition() == null) {
-        }*/
-        Vision.ParkingPosition park = sleeveDetection.getPosition();
+        while (sleeveDetection.route == 0) {
+        }
+        Chassis.camera.closeCameraDeviceAsync(() -> {
+        });*/
+        int park = sleeveDetection.route;
         //drive.setPoseEstimate(positions.start);
         pathfind(positions.start, positions.cones);
+        double targetClawHeight = 7.9;
+        double junctionHeight = 37;
+        double curClawHeight = 3;
+        boolean preload = true;
         boolean cone = false;
         for (int i = 0; i < 4; i++) { //even number = at junction
             pathfind(cone ? positions.cones : positions.junction, cone ? positions.junction : positions.cones);
-            cone = !cone;
+
             if (cone) {
+                if (targetClawHeight - curClawHeight < 0) {
+                    Intake.down(Math.abs(targetClawHeight - curClawHeight));
+                } else {
+                    Intake.up(Math.abs(targetClawHeight - curClawHeight));
+                }
                 Intake.in();
+                if (!preload) {
+                    targetClawHeight -= 1.182;
+                }
+                preload = false;
             } else {
-                Intake.up();
+                Intake.up(junctionHeight - curClawHeight);
+                forward(11);
+                Intake.down(junctionHeight - curClawHeight);
                 Intake.out();
-                Intake.down();
+                back(11);
             }
+            cone = !cone;
             Thread.sleep(500);
         }
 
@@ -63,12 +77,12 @@ public class Pathfinding {
         } else {
             leftOffset = 24;
         }
-        park = Vision.ParkingPosition.CENTER; //todo temporary
-        if (park == Vision.ParkingPosition.CENTER) {
+        park = 2; //todo temporary
+        if (park == 2) {
             parkPos = positions.junction;
-        } else if (park == Vision.ParkingPosition.RIGHT) {
+        } else if (park == 3) {
             parkPos = new Pose2d(positions.junction.getX() - leftOffset, positions.junction.getY());
-        } else if (park == Vision.ParkingPosition.LEFT) {
+        } else if (park == 1) {
             parkPos = new Pose2d(positions.junction.getX() + leftOffset, positions.junction.getY());
         }
         assert parkPos != null;
@@ -142,11 +156,30 @@ public class Pathfinding {
             }
             prev = n1;
         }
+        double endRot = finalPose.getHeading();
+        double turnAmount = endRot - headingEstimate;
+        if (Math.abs(turnAmount) < 0.1) {
+            return;
+        }
+        if (Math.abs(turnAmount) > Math.PI) {
+            turnAmount = (Math.PI - turnAmount) % (Math.PI * 2);
+        }
+        turn(turnAmount);
     }
 
     private static void forward(double inches) throws InterruptedException {
         for (DcMotor motor : Chassis.motors) {
             motor.setPower(0.5);
+        }
+        Thread.sleep((long) (MS_PER_INCH * inches));
+        for (DcMotor motor : Chassis.motors) {
+            motor.setPower(0);
+        }
+    }
+
+    private static void back(double inches) throws InterruptedException {
+        for (DcMotor motor : Chassis.motors) {
+            motor.setPower(-0.5);
         }
         Thread.sleep((long) (MS_PER_INCH * inches));
         for (DcMotor motor : Chassis.motors) {
