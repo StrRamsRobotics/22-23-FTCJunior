@@ -7,6 +7,9 @@ public class Conversions {
     public static double getRealPos(int a) {
         return (a - 5 * Constants.SUBDIVISIONS) * 12 / Constants.SUBDIVISIONS;
     }
+    public static double toDegrees(double  radians) {
+        return radians * 180 / Math.PI;
+    }
     public static void subdivide(double[][] mode) {
         int[][] subdividedField = new int[Constants.FIELD.length * Constants.SUBDIVISIONS][Constants.FIELD[0].length * Constants.SUBDIVISIONS];
         for (int i = 0; i < Constants.FIELD.length; i++) {

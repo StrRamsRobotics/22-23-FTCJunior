@@ -4,6 +4,8 @@ public class Constants {
     public static final boolean DEBUG = false;
     public static final int SUBDIVISIONS = 1;
     public static final int TIMES_CONES = 1;
+    public static final double JUNCTION_HEIGHT = 37;
+    public static final boolean PRELOAD = true;
     public static final int[][] FIELD = {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },

@@ -16,6 +16,10 @@ public class MainAuto {
     public static Vision sleeveDetection = new Vision();
     public static final int MS_PER_INCH = 100;
     public static final int MS_PER_45_DEGREES = 200;
+    public static double curClawHeight = 3;
+    public static double targetClawHeight = 7.9;
+    public static boolean preload = Constants.PRELOAD;
+    public static boolean cone = Constants.PRELOAD;
 
     public static void runPaths(ArrayList<Path> paths) {
 //        double prevAngle = 0.0;
@@ -35,6 +39,7 @@ public class MainAuto {
 //                    angle = Math.toRadians(360) - Math.abs(angle);
 //                }
 //                tsb = tsb.turn(prevAngle + angle);
+//                prevAngle = angle;
 //            }
 //            for (int j = 0; j < path.length; j++) {
 //                Point p = path[j];
@@ -116,7 +121,7 @@ public class MainAuto {
                 if (Math.abs(angle) > Math.toRadians(180)) {
                     angle = Math.toRadians(360) - Math.abs(angle);
                 }
-                turn(prevAngle + angle);
+                turn(Conversions.toDegrees(prevAngle + angle));
                 prevAngle = angle;
             }
             for (int j = 0; j < path.length; j++) {
@@ -135,10 +140,13 @@ public class MainAuto {
                             newAngle = Math.toRadians(360) - Math.abs(newAngle);
                         }
                         forward(12);
-                        turn(newAngle);
+                        turn(Conversions.toDegrees(newAngle));
                         prevAngle = angle;
                     } else {
                         forward(12);
+                        if (pa.cone) {
+                            runArmClaw();
+                        }
                     }
                 }
             }
@@ -166,15 +174,40 @@ public class MainAuto {
         });
 
         ArrayList<Path> paths = new ArrayList<>();
-        paths.add(new Path(3, false));
-        for (int i = 0; i < Constants.TIMES_CONES; i++) {
-            paths.add(new Path(4, false));
-            paths.add(new Path(4, true));
+        paths.add(new Path(3, false, false));
+        for (int i = 0; i < Constants.TIMES_CONES + (Constants.PRELOAD ? 1 : 0); i++) {
+            paths.add(new Path(4, false, true));
+            paths.add(new Path(4, true, true));
         }
-        paths.add(new Path(sleeveDetection.route, false));
+        paths.add(new Path(sleeveDetection.route, false, false));
 //        runPaths(paths);
 //        runManualPaths(paths);
         runLiterallyManualPaths(paths);
+    }
+
+    private static void runArmClaw() throws InterruptedException {
+        if (cone) {
+            if (targetClawHeight - curClawHeight < 0) {
+                Intake.down(Math.abs(targetClawHeight - curClawHeight));
+            } else {
+                Intake.up(Math.abs(targetClawHeight - curClawHeight));
+            }
+            Intake.in();
+            if (preload) {
+                targetClawHeight -= 1.182;
+            }
+            preload = false;
+        } else {
+            Intake.up(Constants.JUNCTION_HEIGHT - curClawHeight);
+            turn(45);
+            forward(11);
+            Intake.down(Constants.JUNCTION_HEIGHT - curClawHeight);
+            Intake.out();
+            back(11);
+            turn(-45);
+        }
+        cone = !cone;
+        Thread.sleep(500);
     }
 
     private static void forward(double inches) throws InterruptedException {

@@ -36,6 +36,7 @@ public class MeepMeepTesting {
                     angle = Math.toRadians(360) - Math.abs(angle);
                 }
                 tsb = tsb.turn(prevAngle + angle);
+                prevAngle = angle;
             }
             for (int j = 0; j < path.length; j++) {
                 Point p = path[j];
@@ -155,12 +156,14 @@ public class MeepMeepTesting {
         Conversions.subdivide(chosen);
         ArrayList<Path> paths = new ArrayList<>();
         paths.add(new Path(3, false));
-        for (int i = 0; i < Constants.TIMES_CONES; i++) {
+        for (int i = 0; i < Constants.TIMES_CONES + (Constants.PRELOAD ? 1 : 0); i++) {
             paths.add(new Path(4, false));
             paths.add(new Path(4, true));
         }
         paths.add(new Path(2, false));
-        runManualPaths(paths);
+//        runPaths(paths);
+//        runManualPaths(paths);
+        runLiterallyManualPaths(paths);
         myBot.followTrajectorySequence(tsb.build());
 
 
