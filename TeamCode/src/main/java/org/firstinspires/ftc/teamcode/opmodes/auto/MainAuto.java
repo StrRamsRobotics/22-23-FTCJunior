@@ -19,7 +19,7 @@ public class MainAuto {
     public static double curClawHeight = 3;
     public static double targetClawHeight = 7.9;
     public static boolean preload = Constants.PRELOAD;
-    public static boolean cone = Constants.PRELOAD;
+    public static boolean cone = !Constants.PRELOAD;
 
     public static void runPaths(ArrayList<Path> paths) {
 //        double prevAngle = 0.0;
