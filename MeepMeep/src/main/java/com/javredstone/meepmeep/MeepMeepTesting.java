@@ -161,9 +161,9 @@ public class MeepMeepTesting {
             paths.add(new Path(4, true));
         }
         paths.add(new Path(2, false));
-//        runPaths(paths);
+        runPaths(paths);
 //        runManualPaths(paths);
-        runLiterallyManualPaths(paths);
+//        runLiterallyManualPaths(paths);
         myBot.followTrajectorySequence(tsb.build());
 
 
