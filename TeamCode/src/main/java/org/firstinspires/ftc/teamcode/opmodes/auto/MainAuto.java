@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.opmodes.auto.pathfind.BFS;
@@ -14,8 +15,8 @@ import java.util.ArrayList;
 
 public class MainAuto {
     public static Vision sleeveDetection = new Vision();
-    public static final int MS_PER_INCH = 100;
-    public static final int MS_PER_45_DEGREES = 200;
+    public static int MS_PER_INCH = 75;
+    public static int MS_PER_45_DEGREES =50;
     public static double curClawHeight = 3;
     public static double targetClawHeight = 7.9;
     public static boolean preload = Constants.PRELOAD;
@@ -121,7 +122,10 @@ public class MainAuto {
                 if (Math.abs(angle) > Math.toRadians(180)) {
                     angle = Math.toRadians(360) - Math.abs(angle);
                 }
-                turn(Conversions.toDegrees(prevAngle + angle));
+                double turnAmount = Conversions.toDegrees(prevAngle + angle);
+                if (Math.abs(turnAmount)>0.1) {
+                    turn(turnAmount);
+                }
                 prevAngle = angle;
             }
             for (int j = 0; j < path.length; j++) {
@@ -145,7 +149,7 @@ public class MainAuto {
                     } else {
                         forward(12);
                         if (pa.cone) {
-                            runArmClaw();
+                            //runArmClaw();
                         }
                     }
                 }
@@ -154,10 +158,11 @@ public class MainAuto {
     }
 
     public static void run(double[][] chosen) throws InterruptedException {
+
         Conversions.subdivide(chosen);
 
         sleeveDetection = new Vision();
-        Chassis.camera.setPipeline(sleeveDetection);
+        /*Chassis.camera.setPipeline(sleeveDetection);
         Chassis.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -171,8 +176,8 @@ public class MainAuto {
         while (sleeveDetection.route == -1) {
         }
         Chassis.camera.closeCameraDeviceAsync(() -> {
-        });
-
+        });*/
+sleeveDetection.route=2;
         ArrayList<Path> paths = new ArrayList<>();
         paths.add(new Path(3, false, false));
         for (int i = 0; i < Constants.TIMES_CONES + (Constants.PRELOAD ? 1 : 0); i++) {
@@ -212,7 +217,7 @@ public class MainAuto {
 
     private static void forward(double inches) throws InterruptedException {
         for (DcMotor motor : Chassis.motors) {
-            motor.setPower(1);
+            motor.setPower(0.5);
         }
         Thread.sleep((long) (MS_PER_INCH * inches));
         for (DcMotor motor : Chassis.motors) {
@@ -222,7 +227,7 @@ public class MainAuto {
 
     private static void back(double inches) throws InterruptedException {
         for (DcMotor motor : Chassis.motors) {
-            motor.setPower(-1);
+            motor.setPower(-0.5);
         }
         Thread.sleep((long) (MS_PER_INCH * inches));
         for (DcMotor motor : Chassis.motors) {
@@ -234,17 +239,17 @@ public class MainAuto {
         degrees = Math.toDegrees(degrees);
         if (degrees < 0) {
             for (DcMotor motor : Chassis.leftMotors) {
-                motor.setPower(1);
+                motor.setPower(-0.5);
             }
             for (DcMotor motor : Chassis.rightMotors) {
-                motor.setPower(-1);
+                motor.setPower(0.5);
             }
         } else {
             for (DcMotor motor : Chassis.rightMotors) {
-                motor.setPower(1);
+                motor.setPower(-0.5);
             }
             for (DcMotor motor : Chassis.leftMotors) {
-                motor.setPower(-1);
+                motor.setPower(0.5);
             }
         }
         Thread.sleep((long) (MS_PER_45_DEGREES * Math.abs(degrees) / 45));

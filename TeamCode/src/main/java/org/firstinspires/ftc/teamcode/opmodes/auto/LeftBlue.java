@@ -10,7 +10,8 @@ public class LeftBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Chassis.init(hardwareMap);
-        Intake.init(hardwareMap);
+        //Intake.init(hardwareMap);
+        telemetry.addData("init", "a");
         waitForStart();
         MainAuto.run(Constants.LEFT_BLUE);
     }

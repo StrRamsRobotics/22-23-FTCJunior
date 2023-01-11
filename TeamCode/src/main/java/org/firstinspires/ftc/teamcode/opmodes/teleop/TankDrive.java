@@ -14,9 +14,9 @@ public class TankDrive extends LinearOpMode {
         DcMotor right = hardwareMap.get(DcMotor.class, "right");
         DcMotor left2 = hardwareMap.get(DcMotor.class, "left2");
         DcMotor right2 = hardwareMap.get(DcMotor.class, "right2");
-        CRServoImplEx claw = hardwareMap.get(CRServoImplEx.class, "servo");
-        claw.setPwmEnable();
-        DcMotor lift = hardwareMap.get(DcMotor.class, "lift");
+        //CRServoImplEx claw = hardwareMap.get(CRServoImplEx.class, "servo");
+        //claw.setPwmEnable();
+        //DcMotor lift = hardwareMap.get(DcMotor.class, "lift");
         right.setDirection(DcMotorSimple.Direction.REVERSE);
         right2.setDirection(DcMotorSimple.Direction.REVERSE);
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -38,18 +38,18 @@ public class TankDrive extends LinearOpMode {
             telemetry.addData(String.valueOf(lefty), righty);
             telemetry.update();
             //claw start
-            if (gamepad1.dpad_left) {
-                claw.setPower(1);
-            }
-            if (gamepad1.dpad_right) {
-                claw.setPower(-1);
-            }
-            if (gamepad1.dpad_up) {
-                lift.setPower(1);
-            }
-            if (gamepad1.dpad_down) {
-                lift.setPower(-1);
-            }
+//            if (gamepad1.dpad_left) {
+//                claw.setPower(1);
+//            }
+//            if (gamepad1.dpad_right) {
+//                claw.setPower(-1);
+//            }
+//            if (gamepad1.dpad_up) {
+//                lift.setPower(1);
+//            }
+//            if (gamepad1.dpad_down) {
+//                lift.setPower(-1);
+//            }
         }
     }
 }

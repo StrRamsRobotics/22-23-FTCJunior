@@ -17,10 +17,12 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TankVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -65,7 +67,7 @@ public class SampleTankDrive extends TankDrive {
 
     private TrajectoryFollower follower;
 
-    private List<DcMotorEx> motors, leftMotors, rightMotors;
+    public List<DcMotorEx> motors, leftMotors, rightMotors;
     private BNO055IMU imu;
 
     private VoltageSensor batteryVoltageSensor;
@@ -85,6 +87,7 @@ public class SampleTankDrive extends TankDrive {
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
+
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
@@ -113,14 +116,22 @@ public class SampleTankDrive extends TankDrive {
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
         // add/remove motors depending on your robot (e.g., 6WD)
-        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        DcMotorEx leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        DcMotorEx rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "left");
+       // DcMotorEx leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+       // DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        DcMotorEx rightFront = hardwareMap.get(DcMotorEx.class, "right");
+        if (true) {
+            DcMotorEx left2 = hardwareMap.get(DcMotorEx.class, "left2");
+            DcMotorEx right2 = hardwareMap.get(DcMotorEx.class, "right2");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-        leftMotors = Arrays.asList(leftFront, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightRear);
+            motors = Arrays.asList(leftFront, rightFront, left2, right2);
+            leftMotors = Arrays.asList(leftFront, left2);
+            rightMotors = Arrays.asList(rightFront, right2);
+        } else {
+            motors = Arrays.asList(leftFront, rightFront);
+            leftMotors = Arrays.asList(leftFront);
+            rightMotors = Arrays.asList(rightFront);
+        }
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -139,7 +150,9 @@ public class SampleTankDrive extends TankDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-
+        for (DcMotorEx motor : rightMotors) { //done
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 
@@ -208,7 +221,11 @@ public class SampleTankDrive extends TankDrive {
 
     public void update() {
         updatePoseEstimate();
-        DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        Pose2d vel = getPoseVelocity();
+        if (vel != null) {
+            vel.minus(new Pose2d(0, vel.getY(), 0));
+        }
+        DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), vel);
         if (signal != null) setDriveSignal(signal);
     }
 
@@ -256,9 +273,6 @@ public class SampleTankDrive extends TankDrive {
                     0,
                     OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
-        } else {
-            // Ensure the y axis is zeroed out.
-            vel = new Pose2d(drivePower.getX(), 0, drivePower.getHeading());
         }
 
         setDrivePower(vel);
