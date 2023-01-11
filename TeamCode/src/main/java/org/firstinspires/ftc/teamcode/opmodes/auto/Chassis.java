@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,6 +15,7 @@ import java.util.List;
 public class Chassis {
     public static List<DcMotor> leftMotors, rightMotors, motors;
     public static OpenCvCamera camera;
+    public static BNO055IMU imu;
 
     public static void init(HardwareMap map) {
         if (true) { //true = 4wd
@@ -27,6 +29,10 @@ public class Chassis {
             for (DcMotor motor : motors) {
                 motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
+            imu = map.get(BNO055IMU.class, "imu");
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            imu.initialize(parameters);
             int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
             camera = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "camera"), cameraMonitorViewId);
         }

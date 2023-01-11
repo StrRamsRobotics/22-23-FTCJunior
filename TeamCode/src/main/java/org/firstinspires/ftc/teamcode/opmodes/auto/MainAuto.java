@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.opmodes.auto.pathfind.BFS;
 import org.firstinspires.ftc.teamcode.opmodes.auto.pathfind.Constants;
 import org.firstinspires.ftc.teamcode.opmodes.auto.pathfind.Conversions;
@@ -13,14 +16,14 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
+@Config
 public class MainAuto {
-    public static Vision sleeveDetection = new Vision();
-    public static int MS_PER_INCH = 75;
-    public static int MS_PER_45_DEGREES =50;
+    public static int MS_PER_INCH = 77;
     public static double curClawHeight = 3;
     public static double targetClawHeight = 7.9;
-    public static boolean preload = Constants.PRELOAD;
-    public static boolean cone = !Constants.PRELOAD;
+    private static boolean preload = Constants.PRELOAD;
+    private static boolean cone = !Constants.PRELOAD;
+    private static Telemetry telemetry;
 
     public static void runPaths(ArrayList<Path> paths) {
 //        double prevAngle = 0.0;
@@ -108,6 +111,7 @@ public class MainAuto {
     public static void runLiterallyManualPaths(ArrayList<Path> paths) throws InterruptedException {
         double prevAngle = 0.0;
         for (int i = 0; i < paths.size(); i++) {
+            telemetry.addData("pathfinding", i); telemetry.update();
             Path pa = paths.get(i);
             int[] points = Constants.SUBDIVIDED_MODE[pa.idx];
             BFS bfs = new BFS();
@@ -129,6 +133,7 @@ public class MainAuto {
                 prevAngle = angle;
             }
             for (int j = 0; j < path.length; j++) {
+                telemetry.addData("following path segment", i);
                 Point p = path[j];
                 Point d = p;
                 if (j > 0) {
@@ -143,10 +148,13 @@ public class MainAuto {
                         if (Math.abs(newAngle) > Math.toRadians(180)) {
                             newAngle = Math.toRadians(360) - Math.abs(newAngle);
                         }
+                        telemetry.addData("forward", 12); telemetry.update();
                         forward(12);
+                        telemetry.addData("turn", Conversions.toDegrees(newAngle)); telemetry.update();
                         turn(Conversions.toDegrees(newAngle));
                         prevAngle = angle;
                     } else {
+                           telemetry.addData("forward", 12); telemetry.update();
                         forward(12);
                         if (pa.cone) {
                             //runArmClaw();
@@ -158,10 +166,11 @@ public class MainAuto {
     }
 
     public static void run(double[][] chosen) throws InterruptedException {
+        telemetry=FtcDashboard.getInstance().getTelemetry();
+        try { //ftcdashboard doesn't report errors
+            Conversions.subdivide(chosen);
+            Vision sleeveDetection = new Vision();
 
-        Conversions.subdivide(chosen);
-
-        sleeveDetection = new Vision();
         /*Chassis.camera.setPipeline(sleeveDetection);
         Chassis.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -177,17 +186,23 @@ public class MainAuto {
         }
         Chassis.camera.closeCameraDeviceAsync(() -> {
         });*/
-sleeveDetection.route=2;
-        ArrayList<Path> paths = new ArrayList<>();
-        paths.add(new Path(3, false, false));
-        for (int i = 0; i < Constants.TIMES_CONES + (Constants.PRELOAD ? 1 : 0); i++) {
-            paths.add(new Path(4, false, true));
-            paths.add(new Path(4, true, true));
-        }
-        paths.add(new Path(sleeveDetection.route, false, false));
+            sleeveDetection.route = 2;
+            ArrayList<Path> paths = new ArrayList<>();
+            paths.add(new Path(3, false, false));
+            for (int i = 0; i < Constants.TIMES_CONES + (Constants.PRELOAD ? 1 : 0); i++) {
+                paths.add(new Path(4, false, true));
+                paths.add(new Path(4, true, true));
+            }
+            paths.add(new Path(sleeveDetection.route, false, false));
 //        runPaths(paths);
 //        runManualPaths(paths);
-        runLiterallyManualPaths(paths);
+            telemetry.addData("made path", "a");
+            telemetry.update();
+            //turn(180); //camera (currently turning is inaccuate and it leads to pole collision)
+            runLiterallyManualPaths(paths);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void runArmClaw() throws InterruptedException {
@@ -236,7 +251,7 @@ sleeveDetection.route=2;
     }
 
     private static void turn(double degrees) throws InterruptedException {
-        degrees = Math.toDegrees(degrees);
+        double curRot=Chassis.imu.getAngularOrientation().firstAngle, target = curRot+degrees;
         if (degrees < 0) {
             for (DcMotor motor : Chassis.leftMotors) {
                 motor.setPower(-0.5);
@@ -252,7 +267,7 @@ sleeveDetection.route=2;
                 motor.setPower(0.5);
             }
         }
-        Thread.sleep((long) (MS_PER_45_DEGREES * Math.abs(degrees) / 45));
+        while (Math.abs(Chassis.imu.getAngularOrientation().firstAngle-target)>2) {}
         for (DcMotor motor : Chassis.motors) {
             motor.setPower(0);
         }
