@@ -6,18 +6,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
     private static CRServoImplEx intake;
-    private static DcMotor leftLift;
-    private static DcMotor rightLift;
+    private static DcMotor lift;
     private static final int TICKS_PER_INCH = 20; //don't know
-
+//19521 for expansion cable
     public static void init(HardwareMap map) {
-        intake = map.get(CRServoImplEx.class, "intake");
-        leftLift = map.get(DcMotor.class, "leftLift");
-        rightLift = map.get(DcMotor.class, "rightLift");
+        intake = map.get(CRServoImplEx.class, "servo");
+        lift=map.get(DcMotor.class, "lift");
         intake.setPwmEnable();
         //leftLift.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public static void in() throws InterruptedException {
@@ -27,31 +24,23 @@ public class Intake {
     }
 
     public static void up(double inches) {
-        leftLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
-        rightLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setPower(0.5);
-        rightLift.setPower(0.5);
-        while (leftLift.isBusy() && rightLift.isBusy()) ;
-        leftLift.setPower(0);
-        rightLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setTargetPosition((int) (TICKS_PER_INCH * inches));
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setPower(0.5);
+        while (lift.isBusy()) ;
+        lift.setPower(0);
+
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public static void down(double inches) {
-        leftLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
-        rightLift.setTargetPosition((int) (TICKS_PER_INCH * inches));
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setPower(-0.5);
-        rightLift.setPower(-0.5);
-        while (leftLift.isBusy() && rightLift.isBusy()) ;
-        leftLift.setPower(0);
-        rightLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setTargetPosition((int) (TICKS_PER_INCH * inches));
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setPower(-0.5);
+        while (lift.isBusy()) ;
+        lift.setPower(0);
+
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public static void out() throws InterruptedException {

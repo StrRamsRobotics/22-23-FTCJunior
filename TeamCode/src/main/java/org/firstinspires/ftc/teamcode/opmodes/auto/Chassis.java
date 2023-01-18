@@ -19,10 +19,10 @@ public class Chassis {
     public static void init(HardwareMap map) {
         if (true) { //true = 4wd
             DcMotor left1 = map.get(DcMotor.class, "left"), left2 = map.get(DcMotor.class, "left2"), right1 = map.get(DcMotor.class, "right"), right2 = map.get(DcMotor.class, "right2");
-            leftMotors = Arrays.asList(left1, left2);
-            rightMotors = Arrays.asList(right1, right2);
+            rightMotors = Arrays.asList(left1, left2); //wiring issue
+            leftMotors = Arrays.asList(right1, right2);
             motors = Arrays.asList(left1, left2, right1, right2);
-            for (DcMotor motor : rightMotors) {
+            for (DcMotor motor : leftMotors) {
                 motor.setDirection(DcMotorSimple.Direction.REVERSE);
             }
             for (DcMotor motor : motors) {

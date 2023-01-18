@@ -15,14 +15,15 @@ public class MainAuto {
     public static AStar aStar;
     static Vision sleeveDetection = new Vision();
     static Positions positions;
-    static final int MS_PER_INCH = 100;
-    static final int MS_PER_45_DEGREES = 200;
+    static final int MS_PER_INCH = 132;
+    static final int MS_PER_45_DEGREES = 400;
 
     public static void run(Positions positions) throws InterruptedException {
 
         MainAuto.positions = positions;
- /*       sleeveDetection = new Vision();
+        sleeveDetection = new Vision();
         Chassis.camera.setPipeline(sleeveDetection);
+
         Chassis.camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -33,19 +34,34 @@ public class MainAuto {
             public void onError(int errorCode) {
             }
         });
-        while (sleeveDetection.route == 0) {
+        String park;
+        while (true) {
+            String route = sleeveDetection.route;
+            if (!route.equals("OH SHIT!")) {
+                park = route;
+                break;
+            }
         }
+
         Chassis.camera.closeCameraDeviceAsync(() -> {
-        });*/
-        int park = sleeveDetection.route;
+        });
+        System.out.println("route:" + park);
+        //if (park.equals("OH SHIT!")) park="LEFT";
         //drive.setPoseEstimate(positions.start);
-        pathfind(positions.start, positions.cones);
+/*
         double targetClawHeight = 7.9;
         double junctionHeight = 37;
         double curClawHeight = 3;
         boolean preload = true;
         boolean cone = false;
+        pathfind(positions.start, positions.junction);
+        Intake.up(junctionHeight - curClawHeight);
+        forward(11);
+        Intake.down(junctionHeight - curClawHeight);
+        Intake.out();
+        back(11);
         for (int i = 0; i < 4; i++) { //even number = at junction
+
             pathfind(cone ? positions.cones : positions.junction, cone ? positions.junction : positions.cones);
 
             if (cone) {
@@ -68,25 +84,30 @@ public class MainAuto {
             }
             cone = !cone;
             Thread.sleep(500);
-        }
-
+        }*/
         Pose2d parkPos = null;
         int leftOffset;
         if (positions == Positions.LEFT_BLUE || positions == Positions.RIGHT_BLUE) {
-            leftOffset = -24;
-        } else {
             leftOffset = 24;
+        } else {
+            leftOffset = -24;
         }
-        park = 2; //todo temporary
-        if (park == 2) {
+        if (park.equals("CENTER")) { //park.equals("CENTER")
+            back(24);
             parkPos = positions.junction;
-        } else if (park == 3) {
+        } else if (park.equals("RIGHT")) { //park.equals("RIGHT")
+            back(24);
+            turn(Math.PI / 2);
+            forward(24);
             parkPos = new Pose2d(positions.junction.getX() - leftOffset, positions.junction.getY());
-        } else if (park == 1) {
+        } else if (park.equals("LEFT")) { //park.equals("LEFT")
+            back(24);
+            turn(-Math.PI / 2);
+            forward(24);
             parkPos = new Pose2d(positions.junction.getX() + leftOffset, positions.junction.getY());
         }
-        assert parkPos != null;
-        pathfind(positions.junction, parkPos);
+        // assert parkPos != null;
+        // pathfind(positions.junction, parkPos); //actually positions.junction if doing main auto
     }
 
     private static void setBlocks(AStar aStar) {
@@ -175,6 +196,7 @@ public class MainAuto {
         for (DcMotor motor : Chassis.motors) {
             motor.setPower(0);
         }
+        Thread.sleep(500);
     }
 
     private static void back(double inches) throws InterruptedException {
@@ -185,6 +207,7 @@ public class MainAuto {
         for (DcMotor motor : Chassis.motors) {
             motor.setPower(0);
         }
+        Thread.sleep(500);
     }
 
     private static void turn(double degrees) throws InterruptedException {
@@ -208,5 +231,6 @@ public class MainAuto {
         for (DcMotor motor : Chassis.motors) {
             motor.setPower(0);
         }
+        Thread.sleep(500);
     }
 }

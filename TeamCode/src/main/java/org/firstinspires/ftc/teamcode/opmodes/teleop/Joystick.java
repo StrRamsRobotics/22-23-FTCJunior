@@ -18,6 +18,7 @@ public class Joystick extends LinearOpMode {
         CRServoImplEx claw = hardwareMap.get(CRServoImplEx.class, "servo");
         claw.setPwmEnable();
         DcMotor lift = hardwareMap.get(DcMotor.class, "lift");
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
 
 
@@ -29,17 +30,26 @@ public class Joystick extends LinearOpMode {
                             Math.abs(gamepad1.right_stick_x) < 0.2 ? 0 : -gamepad1.right_stick_x
                     )
             );
-            if (gamepad1.dpad_left) {
-                claw.setPower(0.5);
+            //claw start
+            if (gamepad1.left_trigger>0) {
+                claw.setPower(1);
+            } else {
+                claw.setPower(0);
             }
-            if (gamepad1.dpad_right) {
-                claw.setPower(-0.5);
+            if (gamepad1.left_bumper) {
+                claw.setPower(-1);
+            }else {
+                claw.setPower(0);
             }
-            if (gamepad1.dpad_up) {
-                lift.setPower(0.5);
+            if (gamepad1.right_trigger>0) {
+                lift.setPower(1);
+            }else {
+                lift.setPower(0);
             }
-            if (gamepad1.dpad_down) {
-                lift.setPower(-0.5);
+            if (gamepad1.right_bumper) {
+                lift.setPower(-1);
+            }else {
+                lift.setPower(0);
             }
         }
     }
